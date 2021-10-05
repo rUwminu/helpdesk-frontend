@@ -8,7 +8,7 @@ import Logo from '../../assets/image/Logo.svg'
 import Avatar from '../../assets/image/avatar.jpg'
 
 // Icon
-import { ExpandMore } from '@mui/icons-material'
+import { ExpandMore, Logout, AssignmentInd } from '@mui/icons-material'
 
 const Navbar = () => {
   let lastScroll = 0
@@ -18,6 +18,7 @@ const Navbar = () => {
   const [isActive, setIsActive] = useState(false)
   const [isScrollTop, setIsScrollTop] = useState(true)
   const [isMobile, setIsMobile] = useState()
+  const [isDropOption, setIsDropOption] = useState(false)
 
   const handleCheckWidth = () => {
     let windowWidth = window.innerWidth
@@ -62,47 +63,67 @@ const Navbar = () => {
         isScrollTop ? 'py-10 bg-none' : 'py-4 bg-gray-900 shadow-md'
       }`}
     >
-      {userInfo && !loading && <NavInner>
-        <NavLeft>
-          <img src={Logo} alt='logo' />
-        </NavLeft>
-        {!isMobile && (
-          <NavMid>
-            <div className='nav-link'>Find a Job</div>
-            <div className='nav-link'>Submit a Job</div>
-            <div className='nav-link'>Sponsor us</div>
-          </NavMid>
-        )}
-        <NavRight>
-          {isMobile && (
-            <Burger
-              className={`${isActive && 'line-active'}`}
-              onClick={() => setIsActive(!isActive)}
-            >
-              <div className={`line-1`} />
-              <div className={`line-2`} />
-              <div className={`line-3`} />
-            </Burger>
+      {userInfo && !loading && (
+        <NavInner>
+          <NavLeft>
+            <img src={Logo} alt='logo' />
+          </NavLeft>
+          {!isMobile && (
+            <NavMid>
+              <div className='nav-link'>Manage User</div>
+              <div className='nav-link'>Watch Ticket Stats</div>
+              <div className='nav-link'>Sponsor us</div>
+            </NavMid>
           )}
+          <NavRight>
+            {isMobile && (
+              <Burger
+                className={`${isActive && 'line-active'}`}
+                onClick={() => setIsActive(!isActive)}
+              >
+                <div className={`line-1`} />
+                <div className={`line-2`} />
+                <div className={`line-3`} />
+              </Burger>
+            )}
 
-          <div className='user-info'>
-            <img src={Avatar} alt='user' />
-            <h2>{userInfo.username}</h2>
-            <ExpandMore className='icon' />
-          </div>
-        </NavRight>
-        {isMobile && (
-          <AbsoluteNav
-            className={`${
-              isActive ? 'translate-x-0 shadow-md' : 'translate-x-full '
-            }`}
-          >
-            <div className='nav-link'>Find a Job</div>
-            <div className='nav-link'>Submit a Job</div>
-            <div className='nav-link'>Sponsor us</div>
-          </AbsoluteNav>
-        )}
-      </NavInner>}
+            <div className='user-info'>
+              <img src={Avatar} alt='user' />
+              <h2>{userInfo.username}</h2>
+              <ExpandMore
+                onClick={() => setIsDropOption(!isDropOption)}
+                className='icon'
+              />
+              {isDropOption && (
+                <AbsoluteDropList
+                  onMouseLeave={() => setIsDropOption(false)}
+                >
+                  <h2>Option</h2>
+                  <div className='option-item'>
+                    <h3>Profile</h3>
+                    <AssignmentInd className='option-icon' />
+                  </div>
+                  <div className='option-item'>
+                    <h3>Logout</h3>
+                    <Logout className='option-icon' />
+                  </div>
+                </AbsoluteDropList>
+              )}
+            </div>
+          </NavRight>
+          {isMobile && (
+            <AbsoluteNav
+              className={`${
+                isActive ? 'translate-x-0 shadow-md' : 'translate-x-full '
+              }`}
+            >
+              <div className='nav-link'>Find a Job</div>
+              <div className='nav-link'>Submit a Job</div>
+              <div className='nav-link'>Sponsor us</div>
+            </AbsoluteNav>
+          )}
+        </NavInner>
+      )}
     </Container>
   )
 }
@@ -196,6 +217,7 @@ const NavRight = styled.div`
 
   .user-info {
     ${tw`
+      relative
       flex
       items-center
       justify-center
@@ -309,6 +331,55 @@ const Burger = styled.div`
       duration-200
       ease-in-out
     `}
+  }
+`
+
+const AbsoluteDropList = styled.div`
+  ${tw`
+    absolute
+    right-0
+    -bottom-36
+    p-2
+    bg-gray-800
+    rounded-md
+    shadow-md
+    transition
+    duration-200
+    ease-in-out
+  `}
+
+  h2 {
+    ${tw`
+      mb-2
+    `}
+  }
+
+  .option-item {
+    ${tw`
+      flex
+      items-center
+      justify-between
+      min-w-[10rem]
+      p-2
+      rounded-md
+      transition
+      duration-200
+      ease-in-out
+      cursor-pointer
+      hover:bg-gray-600
+    `}
+
+    h3 {
+      ${tw`
+        text-gray-200
+      `}
+    }
+
+    .option-icon {
+      ${tw`
+        text-gray-200
+      `}
+    }
   }
 `
 

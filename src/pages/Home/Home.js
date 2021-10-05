@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
-import { Sidebar, JobCard, JobInfo } from '../../components/index'
+import { Sidebar, JobCard, JobInfo, SidebarSmall } from '../../components/index'
+
+// Icon
+import { ExpandMore } from '@mui/icons-material'
 
 const Home = () => {
+  const [isActive, setIsActive] = useState(false)
   const [isMedium, setIsMedium] = useState(false)
   const [isSmall, setIsIsSmall] = useState(false)
 
@@ -37,9 +41,22 @@ const Home = () => {
   return (
     <Container>
       <InnerContainer className={`${isMedium ? '' : ''}`}>
-        {!isMedium && <Sidebar />}
-        <JobCard />
-        {!isSmall && <JobInfo />}
+        {isMedium && (
+          <div className='top-container'>
+            <div onClick={() => setIsActive(!isActive)} className='btn'>
+              <h2>Filter</h2>
+              <ExpandMore className='filter-icon' />
+            </div>
+            <AbsoluteFilterList onMouseLeave={() => setIsActive(false)} className={`${isActive ? 'h-[36rem]' : 'h-0'}`}>
+              <SidebarSmall />
+            </AbsoluteFilterList>
+          </div>
+        )}
+        <div className='bottom-container'>
+          {!isMedium && <Sidebar />}
+          <JobCard />
+          {!isSmall && <JobInfo />}
+        </div>
       </InnerContainer>
     </Container>
   )
@@ -65,10 +82,77 @@ const InnerContainer = styled.div`
     w-full
     md:max-w-7xl
     flex
-    items-start
-    justify-around
-    xl:justify-between
-    overflow-y-hidden
+    flex-col
+    items-end
+    justify-center
+  `}
+
+  .top-container {
+    ${tw`
+      pt-14
+      px-4
+      relative
+    `}
+
+    .btn {
+      ${tw`
+        flex
+        items-center
+        justify-between
+        py-2
+        px-3
+        w-32
+        bg-gray-800
+        rounded-md
+        transition
+        duration-200
+        ease-in-out
+        hover:bg-gray-600
+      `}
+
+      h2 {
+        ${tw`
+          text-xl
+          font-semibold
+          text-gray-200
+        `}
+      }
+
+      .filter-icon {
+        ${tw`
+          ml-2
+          text-3xl
+          text-gray-200
+        `}
+      }
+    }
+  }
+
+  .bottom-container {
+    ${tw`
+      w-full
+      flex
+      items-start
+      justify-around
+      xl:justify-between
+      overflow-y-hidden
+    `}
+  }
+`
+
+const AbsoluteFilterList = styled.div`
+  ${tw`
+    absolute
+    top-[7rem]
+    right-4
+
+    w-44
+    px-4
+    bg-gray-800
+    rounded-md
+    transition-all
+    duration-200
+    ease-linear
   `}
 `
 

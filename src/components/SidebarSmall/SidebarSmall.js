@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
 
 const Sidebar = () => {
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(false)
 
   return (
     <Container>
@@ -48,10 +48,7 @@ const Sidebar = () => {
       <div className='items-list'>
         <h2>Emergency</h2>
         <label className='cb-container'>
-          <input
-            type='checkbox'
-            value='verify'
-          />
+          <input type='checkbox' value='verify' />
           <span className='check'></span>
           Urgent
         </label>
@@ -81,10 +78,11 @@ const Sidebar = () => {
       </div>
     </Container>
   )
-};
+}
 
 const Container = styled.div`
   ${tw`
+    px-2
     h-full
     w-full
     max-w-[10rem]
@@ -98,13 +96,13 @@ const Container = styled.div`
 
   .items-list {
     ${tw`
-      pt-10
+      pt-4
     `}
 
     h2 {
       ${tw`
         mb-4
-        text-xl
+        text-base
         text-gray-200
         font-bold
       `}
@@ -117,7 +115,7 @@ const Container = styled.div`
         justify-start
 
         mb-4
-        text-lg
+        text-base
         text-gray-400
         font-semibold
         hover:text-gray-300
@@ -137,7 +135,7 @@ const Container = styled.div`
         w-[15px]
         h-[15px]
         mr-4
-        bg-gray-900
+        bg-none
         transition
         duration-500
         ease-in-out
@@ -198,4 +196,4 @@ const Container = styled.div`
   }
 `
 
-export default Sidebar;
+export default Sidebar
