@@ -2,6 +2,8 @@ import React from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 
 //Icon class
 import {
@@ -13,49 +15,72 @@ import {
 import { data } from "../../assets/dumpData/Data";
 
 const JobCard = () => {
-  return (
-    <Container>
-      {data.map((job) => {
-        const { id, logo, title, tag, verify, country, location } = job;
+  const dispatch = useDispatch();
 
-        return (
-          <Link to={`/${id}`}>
-            <Card key={id}>
-              <div className="card-top">
-                <img className="logo" src={logo} alt="logo" />
-                <div className="card-title">
-                  <h2>{title}</h2>
-                  <p>
-                    <LocationOnOutlined className="icons" />
-                    {country}, {location}
-                  </p>
-                </div>
-              </div>
-              <div className="card-bottom">
-                <div className="card-tag">
-                  {tag.map((x, index) => (
-                    <div key={index} className="tag-item">
-                      {x}
+  const ticketList = useSelector((state) => state.ticketList);
+  const { tickets, loading } = ticketList;
+
+  const getFirstCharaterOfUsername = (username) => {
+    const FC = username.split(" ");
+
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
+  };
+
+  const getTitleFromBody = (body) => {
+    const title = body.slice(0, 30);
+
+    return title;
+  };
+
+  return (
+    <>
+      {!loading && tickets && (
+        <Container>
+          {tickets.map((ticket) => {
+            const { id, username, body, isUrgent, typeTicket, createdAt } =
+              ticket;
+
+            return (
+              <Link to={`/${id}`}>
+                <Card key={id}>
+                  <div className="card-top">
+                    <div className="logo" alt="logo">
+                      {getFirstCharaterOfUsername(username)}
                     </div>
-                  ))}
-                </div>
-                {verify ? (
-                  <div className="verify">
-                    <CheckCircle className="valid icon" />
-                    Payment Verified
+                    <div className="card-title">
+                      <h2>{getTitleFromBody(body)} ...</h2>
+                      <p>
+                        <LocationOnOutlined className="icons" />
+                        {typeTicket}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <div className="verify">
-                    <CheckCircleOutline className="invalid icon" />
-                    Payment Unverified
+                  <div className="card-bottom">
+                    <div className="card-tag">
+                      <h2>
+                        Posted On {moment(createdAt).format("Do MMM YYYY")}
+                      </h2>
+                      <h3>by {username}</h3>
+                    </div>
+                    {isUrgent ? (
+                      <div className="verify">
+                        <CheckCircle className="valid icon" />
+                        Is Urgent
+                      </div>
+                    ) : (
+                      <div className="verify">
+                        <CheckCircleOutline className="invalid icon" />
+                        Not Urgent
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </Card>
-          </Link>
-        );
-      })}
-    </Container>
+                </Card>
+              </Link>
+            );
+          })}
+        </Container>
+      )}
+    </>
   );
 };
 
@@ -95,9 +120,14 @@ const Card = styled.div`
 
     .logo {
       ${tw`
+        flex
+        items-center
+        justify-center
         w-10
         h-10
-        object-cover
+        font-semibold
+        bg-blue-300
+        text-gray-900
         rounded-md
       `}
     }
@@ -142,18 +172,20 @@ const Card = styled.div`
     .card-tag {
       ${tw`
         flex
-        items-center
-        justify-start
+        flex-col
+        items-start
+        justify-center
       `}
 
-      .tag-item {
+      h2 {
         ${tw`
-          mr-2
-          py-2
-          px-3
           text-gray-200
-          bg-gray-900
-          rounded-sm
+        `}
+      }
+
+      h3 {
+        ${tw`
+          text-gray-400
         `}
       }
     }
@@ -175,7 +207,7 @@ const Card = styled.div`
 
       .valid {
         ${tw`
-          text-blue-600
+          text-red-600
         `}
       }
 

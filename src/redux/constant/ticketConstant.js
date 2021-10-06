@@ -1,0 +1,3 @@
+export const TICKET_REQUEST = "TICKET_REQUEST";
+export const TICKET_SUCCESS = "TICKET_SUCCESS";
+export const TICKET_FAIL = "TICKET_FAIL";

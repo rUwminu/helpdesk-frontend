@@ -1,84 +1,84 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector } from 'react-redux'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector } from "react-redux";
 
 // Svg
-import Logo from '../../assets/image/Logo.svg'
-import Avatar from '../../assets/image/avatar.jpg'
+import Logo from "../../assets/image/Logo.svg";
+import Avatar from "../../assets/image/avatar.jpg";
 
 // Icon
-import { ExpandMore, Logout, AssignmentInd } from '@mui/icons-material'
+import { ExpandMore, Logout, AssignmentInd } from "@mui/icons-material";
 
 const Navbar = () => {
-  let lastScroll = 0
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { userInfo, loading } = userSignIn
+  let lastScroll = 0;
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { userInfo, loading } = userSignIn;
 
-  const [isActive, setIsActive] = useState(false)
-  const [isScrollTop, setIsScrollTop] = useState(true)
-  const [isMobile, setIsMobile] = useState()
-  const [isDropOption, setIsDropOption] = useState(false)
+  const [isActive, setIsActive] = useState(false);
+  const [isScrollTop, setIsScrollTop] = useState(true);
+  const [isMobile, setIsMobile] = useState();
+  const [isDropOption, setIsDropOption] = useState(false);
 
   const handleCheckWidth = () => {
-    let windowWidth = window.innerWidth
+    let windowWidth = window.innerWidth;
 
     if (windowWidth < 768) {
-      setIsMobile(true)
+      setIsMobile(true);
     } else {
-      setIsMobile(false)
+      setIsMobile(false);
     }
-  }
+  };
 
   const handleResize = () => {
     if (window.innerWidth < 768) {
-      setIsMobile(true)
+      setIsMobile(true);
     } else {
-      setIsMobile(false)
+      setIsMobile(false);
     }
-  }
+  };
 
   const handleScroll = () => {
-    const currentTop = window.scrollY
+    const currentTop = window.scrollY;
 
     if (currentTop <= 0) {
-      setIsScrollTop(true)
+      setIsScrollTop(true);
     }
     if (currentTop > lastScroll) {
-      setIsScrollTop(false)
+      setIsScrollTop(false);
     }
 
-    lastScroll = currentTop
-  }
+    lastScroll = currentTop;
+  };
 
   useEffect(() => {
-    handleCheckWidth()
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('scroll', handleScroll)
-  }, [])
+    handleCheckWidth();
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <Container
       className={`${
-        isScrollTop ? 'py-10 bg-none' : 'py-4 bg-gray-900 shadow-md'
+        isScrollTop ? "py-10 bg-none" : "py-4 bg-gray-900 shadow-md"
       }`}
     >
       {userInfo && !loading && (
         <NavInner>
           <NavLeft>
-            <img src={Logo} alt='logo' />
+            <img src={Logo} alt="logo" />
           </NavLeft>
           {!isMobile && (
             <NavMid>
-              <div className='nav-link'>Manage User</div>
-              <div className='nav-link'>Watch Ticket Stats</div>
-              <div className='nav-link'>Sponsor us</div>
+              <div className="nav-link">Manage User</div>
+              <div className="nav-link">Watch Ticket Stats</div>
+              <div className="nav-link">Sponsor us</div>
             </NavMid>
           )}
           <NavRight>
             {isMobile && (
               <Burger
-                className={`${isActive && 'line-active'}`}
+                className={`${isActive && "line-active"}`}
                 onClick={() => setIsActive(!isActive)}
               >
                 <div className={`line-1`} />
@@ -87,46 +87,46 @@ const Navbar = () => {
               </Burger>
             )}
 
-            <div className='user-info'>
-              <img src={Avatar} alt='user' />
+            <div className="user-info">
+              <img src={Avatar} alt="user" />
               <h2>{userInfo.username}</h2>
               <ExpandMore
                 onClick={() => setIsDropOption(!isDropOption)}
-                className='icon'
+                className="icon"
               />
-              {isDropOption && (
-                <AbsoluteDropList
-                  onMouseLeave={() => setIsDropOption(false)}
-                >
-                  <h2>Option</h2>
-                  <div className='option-item'>
-                    <h3>Profile</h3>
-                    <AssignmentInd className='option-icon' />
-                  </div>
-                  <div className='option-item'>
-                    <h3>Logout</h3>
-                    <Logout className='option-icon' />
-                  </div>
-                </AbsoluteDropList>
-              )}
+
+              <AbsoluteDropList
+                className={isDropOption ? "h-36" : "h-0"}
+                onMouseLeave={() => setIsDropOption(false)}
+              >
+                <h2>Option</h2>
+                <div className="option-item">
+                  <h3>Profile</h3>
+                  <AssignmentInd className="option-icon" />
+                </div>
+                <div className="option-item">
+                  <h3>Logout</h3>
+                  <Logout className="option-icon" />
+                </div>
+              </AbsoluteDropList>
             </div>
           </NavRight>
           {isMobile && (
             <AbsoluteNav
               className={`${
-                isActive ? 'translate-x-0 shadow-md' : 'translate-x-full '
+                isActive ? "translate-x-0 shadow-md" : "translate-x-full "
               }`}
             >
-              <div className='nav-link'>Find a Job</div>
-              <div className='nav-link'>Submit a Job</div>
-              <div className='nav-link'>Sponsor us</div>
+              <div className="nav-link">Find a Job</div>
+              <div className="nav-link">Submit a Job</div>
+              <div className="nav-link">Sponsor us</div>
             </AbsoluteNav>
           )}
         </NavInner>
       )}
     </Container>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   ${tw`
@@ -141,7 +141,7 @@ const Container = styled.div`
     ease-in-out
     z-10
   `}
-`
+`;
 
 const NavInner = styled.div`
   ${tw`
@@ -152,7 +152,7 @@ const NavInner = styled.div`
     items-center
     justify-between
   `}
-`
+`;
 
 const NavLeft = styled.div`
   ${tw`
@@ -170,7 +170,7 @@ const NavLeft = styled.div`
         z-30
       `}
   }
-`
+`;
 
 const NavMid = styled.div`
   ${tw`
@@ -193,7 +193,7 @@ const NavMid = styled.div`
         ease-in-out
       `}
   }
-`
+`;
 
 const NavRight = styled.div`
   ${tw`
@@ -265,7 +265,7 @@ const NavRight = styled.div`
       transform: rotate(45deg) translate(-5px, -5px);
     }
   }
-`
+`;
 
 const AbsoluteNav = styled.div`
   ${tw`
@@ -300,7 +300,7 @@ const AbsoluteNav = styled.div`
         ease-in-out
       `}
   }
-`
+`;
 
 const Burger = styled.div`
   ${tw`
@@ -332,25 +332,29 @@ const Burger = styled.div`
       ease-in-out
     `}
   }
-`
+`;
 
 const AbsoluteDropList = styled.div`
   ${tw`
     absolute
     right-0
-    -bottom-36
-    p-2
+    top-12
+
+    px-2
+    w-[12rem]
     bg-gray-800
     rounded-md
     shadow-md
-    transition
+    transition-all
     duration-200
-    ease-in-out
+    ease-linear
+    overflow-hidden
   `}
 
   h2 {
     ${tw`
       mb-2
+      pt-2
     `}
   }
 
@@ -381,6 +385,6 @@ const AbsoluteDropList = styled.div`
       `}
     }
   }
-`
+`;
 
-export default Navbar
+export default Navbar;

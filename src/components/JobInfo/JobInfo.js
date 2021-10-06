@@ -1,81 +1,89 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useParams } from 'react-router-dom'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
 
-import { data } from '../../assets/dumpData/Data'
+import { data } from "../../assets/dumpData/Data";
 
-import { CheckCircle } from '@mui/icons-material'
+import { CheckCircle } from "@mui/icons-material";
 
 const JobInfo = () => {
-  const { id } = useParams()
-  const [isFilter, setIsFilter] = useState(null)
+  const { id } = useParams();
+  const [isFilter, setIsFilter] = useState(null);
+
+  const ticketList = useSelector((state) => state.ticketList);
+  const { tickets, loading } = ticketList;
 
   const getJobDetail = () => {
     if (id) {
-      const flitedJob = data.find((job) => job.id == id)
-      setIsFilter(flitedJob)
+      const flitedTicket = tickets.find((ticket) => ticket.id === id);
+      setIsFilter(flitedTicket);
     } else {
-      setIsFilter(data[0])
+      setIsFilter(tickets[0]);
     }
-  }
+  };
 
   useEffect(() => {
-    getJobDetail()
-  }, [id])
+    if (tickets && !loading) {
+      getJobDetail();
+    }
+  }, [id, tickets]);
+
+  const getTitleFromBody = (body) => {
+    const title = body.slice(0, 30);
+
+    return title;
+  };
 
   return (
     <>
-      {isFilter && (
+      {!loading && isFilter && (
         <Container>
-          <div className='title-container'>
-            <div className='title-info'>
-              <h1>{isFilter.jobtitle}</h1>
-              <p>
-                {isFilter.country}, {isFilter.location}
-              </p>
+          <div className="title-container">
+            <div className="title-info">
+              <h1>{getTitleFromBody(isFilter.body)}</h1>
+              <p>{isFilter.typeTicket}</p>
             </div>
-            <div className='title-postby'>
+            <div className="title-postby">
               <h2>Posted 4 days ago</h2>
-              <p>by {isFilter.company}</p>
+              <p>by {isFilter.username}</p>
             </div>
           </div>
-          <div className='job-highlight'>
-            <div className='list-items'>
-              <h3>Experience</h3>
-              <p>{isFilter.level}</p>
+          <div className="job-highlight">
+            <div className="list-items">
+              <h3>Ticket Level</h3>
+              <p>{isFilter.isUrgent ? "Urgent" : "Not Urgent"}</p>
             </div>
-            <div className='list-items'>
+            <div className="list-items">
               <h3>Location</h3>
-              <p>
-                {isFilter.country}, {isFilter.location}
-              </p>
+              <p>{isFilter.typeTicket}</p>
             </div>
-            <div className='list-items'>
-              <h3>Experience</h3>
-              <p>
-                ${isFilter.salarymin} - ${isFilter.salarymax}/hr
-              </p>
+            <div className="list-items">
+              <h3>Comments</h3>
+              <p>{isFilter.comments.length}</p>
             </div>
           </div>
-          <div className='job-desc'>
-            <h2>Company Overview</h2>
-            <p>{isFilter.desc}</p>
+          <div className="job-desc">
+            <h2>Description</h2>
+            <p>{isFilter.body}</p>
           </div>
-          <div className='job-require'>
-            <h2>Company Overview</h2>
-            {isFilter.requirement.map((x, index) => (
-              <p key={index}>
-                <CheckCircle className='icon' />
-                {x}
-              </p>
-            ))}
-          </div>
+          {isFilter.images.length > 0 && (
+            <div className="job-img">
+              <h2>Image Attached</h2>
+              <div className="img-container">
+                {isFilter.images.map((x, index) => (
+                  <img key={index} src={x} alt="" />
+                ))}
+              </div>
+            </div>
+          )}
         </Container>
       )}
     </>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   ${tw`
@@ -187,7 +195,7 @@ const Container = styled.div`
     }
   }
 
-  .job-require {
+  .job-img {
     ${tw`
       mb-4
     `}
@@ -201,23 +209,34 @@ const Container = styled.div`
       `}
     }
 
-    p {
+    .img-container {
       ${tw`
-        mb-2
         flex
+        flex-wrap
         items-center
-        justify-start
-        text-gray-400
+        justify-between
+        w-full
       `}
 
-      .icon {
+      img {
         ${tw`
-          mr-2
-          text-blue-600
+          w-32
+          h-32
+          rounded-md
+          object-cover
+          transition
+          duration-200
+          ease-in-out
         `}
+
+        :hover {
+          ${tw`
+            scale-110
+          `}
+        }
       }
     }
   }
-`
+`;
 
-export default JobInfo
+export default JobInfo;
