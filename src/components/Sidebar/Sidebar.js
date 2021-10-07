@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
 
 const Sidebar = () => {
-  const [isComplete, setIsComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(false)
 
   return (
     <Container>
@@ -48,10 +48,7 @@ const Sidebar = () => {
       <div className='items-list'>
         <h2>Emergency</h2>
         <label className='cb-container'>
-          <input
-            type='checkbox'
-            value='verify'
-          />
+          <input type='checkbox' value='verify' />
           <span className='check'></span>
           Urgent
         </label>
@@ -60,9 +57,9 @@ const Sidebar = () => {
         <h2>Sort Ticket</h2>
         <label className='cb-container'>
           <input
-            onClick={() => setIsComplete(true)}
+            onClick={() => setIsComplete(false)}
             type='checkbox'
-            checked={isComplete ? true : false}
+            checked={!isComplete ? true : false}
             value='entry'
           />
           <span className='check'></span>
@@ -70,9 +67,9 @@ const Sidebar = () => {
         </label>
         <label className='cb-container'>
           <input
-            onClick={() => setIsComplete(false)}
+            onClick={() => setIsComplete(true)}
             type='checkbox'
-            checked={!isComplete ? true : false}
+            checked={isComplete ? true : false}
             value='inter'
           />
           <span className='check'></span>
@@ -81,7 +78,7 @@ const Sidebar = () => {
       </div>
     </Container>
   )
-};
+}
 
 const Container = styled.div`
   ${tw`
@@ -124,6 +121,7 @@ const Container = styled.div`
         transition
         duration-200
         ease-in-out
+        cursor-pointer
     `}
 
       input {
@@ -198,4 +196,4 @@ const Container = styled.div`
   }
 `
 
-export default Sidebar;
+export default Sidebar

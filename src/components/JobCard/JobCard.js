@@ -1,88 +1,113 @@
-import React from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
+import React, { useState } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import moment from 'moment'
 
 //Icon class
 import {
   LocationOnOutlined,
   CheckCircle,
   CheckCircleOutline,
-} from "@mui/icons-material";
+  Add,
+} from '@mui/icons-material'
 
-import { data } from "../../assets/dumpData/Data";
+import { NewTicket } from '../index'
 
 const JobCard = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+  const [isCreateScreen, setIsCreateScreen] = useState(false)
 
-  const ticketList = useSelector((state) => state.ticketList);
-  const { tickets, loading } = ticketList;
+  const ticketList = useSelector((state) => state.ticketList)
+  const { tickets, loading } = ticketList
 
   const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
+    const FC = username.split(' ')
 
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
-  };
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
+  }
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30);
+    const title = body.slice(0, 30)
 
-    return title;
-  };
+    return title
+  }
 
   return (
     <>
-      {!loading && tickets && (
-        <Container>
-          {tickets.map((ticket) => {
-            const { id, username, body, isUrgent, typeTicket, createdAt } =
-              ticket;
+      <OuterMainContainer>
+        <AbsoluteTopAddButton>
+          <div onClick={() => setIsCreateScreen(true)} className='add-button'>
+            <Add /> Add Ticket
+          </div>
+        </AbsoluteTopAddButton>
+        {!loading && tickets && (
+          <Container>
+            {tickets.map((ticket) => {
+              const { id, username, body, isUrgent, typeTicket, createdAt } =
+                ticket
 
-            return (
-              <Link to={`/${id}`}>
-                <Card key={id}>
-                  <div className="card-top">
-                    <div className="logo" alt="logo">
-                      {getFirstCharaterOfUsername(username)}
-                    </div>
-                    <div className="card-title">
-                      <h2>{getTitleFromBody(body)} ...</h2>
-                      <p>
-                        <LocationOnOutlined className="icons" />
-                        {typeTicket}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="card-bottom">
-                    <div className="card-tag">
-                      <h2>
-                        Posted On {moment(createdAt).format("Do MMM YYYY")}
-                      </h2>
-                      <h3>by {username}</h3>
-                    </div>
-                    {isUrgent ? (
-                      <div className="verify">
-                        <CheckCircle className="valid icon" />
-                        Is Urgent
+              return (
+                <Link to={`/${id}`}>
+                  <Card key={id}>
+                    <div className='card-top'>
+                      <div className='logo' alt='logo'>
+                        {getFirstCharaterOfUsername(username)}
                       </div>
-                    ) : (
-                      <div className="verify">
-                        <CheckCircleOutline className="invalid icon" />
-                        Not Urgent
+                      <div className='card-title'>
+                        <h2>{getTitleFromBody(body)} ...</h2>
+                        <p>
+                          <LocationOnOutlined className='icons' />
+                          {typeTicket}
+                        </p>
                       </div>
-                    )}
-                  </div>
-                </Card>
-              </Link>
-            );
-          })}
-        </Container>
-      )}
+                    </div>
+                    <div className='card-bottom'>
+                      <div className='card-tag'>
+                        <h2>
+                          Posted On {moment(createdAt).format('Do MMM YYYY')}
+                        </h2>
+                        <h3>by {username}</h3>
+                      </div>
+                      {isUrgent ? (
+                        <div className='verify'>
+                          <CheckCircle className='valid icon' />
+                          Is Urgent
+                        </div>
+                      ) : (
+                        <div className='verify'>
+                          <CheckCircleOutline className='invalid icon' />
+                          Not Urgent
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </Link>
+              )
+            })}
+          </Container>
+        )}
+      </OuterMainContainer>
+
+      <NewTicket state={isCreateScreen} toggle={setIsCreateScreen} />
     </>
-  );
-};
+  )
+}
+
+const OuterMainContainer = styled.div`
+  ${tw`
+    relative
+    flex
+    flex-col
+    items-start
+    justify-start
+    h-full
+    w-full
+    max-h-[100vh]
+    max-w-[26.8rem]
+  `}
+`
 
 const Container = styled.div`
   ${tw`
@@ -90,12 +115,10 @@ const Container = styled.div`
     pb-10
     h-full
     w-full
-    max-h-[100vh]
-    max-w-[26.8rem]
     overflow-y-scroll
     scrollbar-hide
   `}
-`;
+`
 
 const Card = styled.div`
   ${tw`
@@ -218,6 +241,31 @@ const Card = styled.div`
       }
     }
   }
-`;
+`
 
-export default JobCard;
+const AbsoluteTopAddButton = styled.div`
+  ${tw`
+    absolute
+    left-0
+  `}
+
+  .add-button {
+    ${tw`
+      flex
+      items-center
+      justify-center
+      py-2
+      px-4
+      text-gray-200
+      bg-gray-800
+      rounded-md
+      transition
+      duration-200
+      ease-in-out
+      cursor-pointer
+      hover:bg-gray-700
+    `}
+  }
+`
+
+export default JobCard

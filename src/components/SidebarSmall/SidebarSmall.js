@@ -57,9 +57,9 @@ const Sidebar = () => {
         <h2>Sort Ticket</h2>
         <label className='cb-container'>
           <input
-            onClick={() => setIsComplete(true)}
+            onClick={() => setIsComplete(false)}
             type='checkbox'
-            checked={isComplete ? true : false}
+            checked={!isComplete ? true : false}
             value='entry'
           />
           <span className='check'></span>
@@ -67,9 +67,9 @@ const Sidebar = () => {
         </label>
         <label className='cb-container'>
           <input
-            onClick={() => setIsComplete(false)}
+            onClick={() => setIsComplete(true)}
             type='checkbox'
-            checked={!isComplete ? true : false}
+            checked={isComplete ? true : false}
             value='inter'
           />
           <span className='check'></span>
@@ -122,6 +122,7 @@ const Container = styled.div`
         transition
         duration-200
         ease-in-out
+        cursor-pointer
     `}
 
       input {

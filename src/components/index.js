@@ -1,5 +1,7 @@
-export { default as Navbar } from "./Navbar/Navbar";
-export { default as Sidebar } from "./Sidebar/Sidebar";
+export { default as Navbar } from './Navbar/Navbar'
+export { default as Sidebar } from './Sidebar/Sidebar'
 export { default as SidebarSmall } from './SidebarSmall/SidebarSmall'
-export { default as JobCard } from "./JobCard/JobCard";
-export { default as JobInfo } from "./JobInfo/JobInfo";
+export { default as JobCard } from './JobCard/JobCard'
+export { default as JobInfo } from './JobInfo/JobInfo'
+export { default as ImgScreen } from './ImgScreen/ImgScreen'
+export { default as NewTicket } from './NewTicket/NewTicket'

@@ -141,6 +141,7 @@ const GET_SELF_TICKETS = gql`
 
 const Container = styled.section`
   ${tw`
+    h-screen
     w-full
     flex
     items-center
@@ -154,7 +155,6 @@ const Container = styled.section`
 const InnerContainer = styled.div`
   ${tw`
     mx-auto
-    pt-20
     h-full
     w-full
     md:max-w-7xl
@@ -230,6 +230,7 @@ const AbsoluteFilterList = styled.div`
     transition-all
     duration-200
     ease-linear
+    z-10
   `}
 `;
 
