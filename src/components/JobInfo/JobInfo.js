@@ -30,7 +30,7 @@ const JobInfo = () => {
   };
 
   useEffect(() => {
-    if (tickets && !loading) {
+    if (tickets) {
       getJobDetail();
     }
   }, [id, tickets]);

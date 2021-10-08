@@ -97,7 +97,7 @@ const Home = () => {
         )}
         <div className="bottom-container">
           {!isMedium && <Sidebar />}
-          <JobCard location={"/home"} />
+          <JobCard location={`${isSmall ? "/ticket_detail" : "/home"}`} />
           {!isSmall && <JobInfo />}
         </div>
       </InnerContainer>

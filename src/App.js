@@ -25,17 +25,19 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <Switch>
-          <Route path="/login">{user ? <Redirect to="/" /> : <Login />}</Route>
+          <Route path="/login">
+            {user ? <Redirect to="/home" /> : <Login />}
+          </Route>
           {user ? (
             <>
               <Navbar />
-              <Route path="/" exact>
+              <Route path="/home" exact>
                 <Home />
               </Route>
-              <Route path="/:id" exact>
+              <Route path="/home/:id" exact>
                 <Home />
               </Route>
-              <Route path="/ticket_detail/:id" exact>
+              <Route path="/ticket_detail/:id">
                 <TicketDetail />
               </Route>
             </>
