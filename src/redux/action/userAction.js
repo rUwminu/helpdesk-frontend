@@ -12,34 +12,40 @@ import {
   USER_UPDATE_PROFILE_FAIL,
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
-} from '../constant/userConstant'
+} from "../constant/userConstant";
+
+import { CLEAR_ALL_STATE } from "../constant/ticketConstant";
 
 export const signin = (data) => (dispatch) => {
   dispatch({
     type: USER_SIGNIN_REQUEST,
-  })
+  });
 
   try {
     dispatch({
       type: USER_SIGNIN_SUCCESS,
       payload: data,
-    })
+    });
 
-    localStorage.setItem('user', JSON.stringify(data))
+    localStorage.setItem("user", JSON.stringify(data));
   } catch (err) {
     dispatch({
       type: USER_SIGNIN_FAIL,
       payload: err,
-    })
+    });
   }
-}
+};
 
 export const signout = () => (dispatch) => {
-  localStorage.removeItem('user')
+  localStorage.removeItem("user");
 
   dispatch({
     type: USER_SIGNOUT,
-  })
-}
+  });
 
-export const register = (data) => (dispatch) => {}
+  dispatch({
+    type: CLEAR_ALL_STATE,
+  });
+};
+
+export const register = (data) => (dispatch) => {};

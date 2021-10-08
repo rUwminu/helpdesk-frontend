@@ -1,3 +1,10 @@
 export const TICKET_REQUEST = "TICKET_REQUEST";
 export const TICKET_SUCCESS = "TICKET_SUCCESS";
 export const TICKET_FAIL = "TICKET_FAIL";
+
+export const IS_URGENT_TRUE = "IS_URGENT_TRUE";
+export const IS_URGENT_FALSE = "IS_URGENT_FALSE";
+
+export const FILTER_BY_DEPARMENT = "FILTER_BY_DEPARMENT";
+
+export const CLEAR_ALL_STATE = "CLEAR_ALL_STATE";

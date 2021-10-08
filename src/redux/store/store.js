@@ -12,7 +12,7 @@ import { ticketRequestReducer } from "../reducers/ticketReducer";
 
 const initialState = {
   userSignIn: {
-    userInfo: localStorage.getItem("user")
+    user: localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user"))
       : null,
   },

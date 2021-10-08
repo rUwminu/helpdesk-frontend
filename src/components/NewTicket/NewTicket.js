@@ -1,25 +1,25 @@
-import React, { useCallback, useState } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useDropzone } from 'react-dropzone'
+import React, { useCallback, useState } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useDropzone } from "react-dropzone";
 
-import { Close } from '@mui/icons-material'
+import { Close } from "@mui/icons-material";
 
 const getColor = (props) => {
   if (props.isDragAccept) {
-    return '#00e676'
+    return "#00e676";
   }
   if (props.isDragReject) {
-    return '#ff1744'
+    return "#ff1744";
   }
   if (props.isDragActive) {
-    return '#2196f3'
+    return "#2196f3";
   }
-  return '#eeeeee'
-}
+  return "#eeeeee";
+};
 
 const NewTicket = ({ state, toggle }) => {
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState([]);
 
   const {
     acceptedFiles,
@@ -36,34 +36,34 @@ const NewTicket = ({ state, toggle }) => {
             preview: URL.createObjectURL(file),
           })
         )
-      )
+      );
     },
-    accept: 'image/*',
-  })
+    accept: "image/*",
+  });
 
   const thumbs = files.map((file) => (
-    <div key={file.name} className='img-container'>
+    <div key={file.name} className="img-container">
       <img src={file.preview} />
       <div>{file.size} Bytes</div>
     </div>
-  ))
+  ));
 
-  console.log(files)
+  //console.log(files);
 
   return (
     <MainContainer
-      className={`${state ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+      className={`${state ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}
     >
-      <Card className={`container ${!state && 'hidden'}`}>
-        <div className='top-card'>
+      <Card className={`container ${!state && "hidden"}`}>
+        <div className="top-card">
           <h1>Create New Ticket</h1>
-          <div onClick={() => toggle(false)} className='icons'>
+          <div onClick={() => toggle(false)} className="icons">
             <Close />
           </div>
         </div>
 
-        <div className='input-items'>
-          <textarea type='textarea' rows='4' cols='50' required />
+        <div className="input-items">
+          <textarea type="textarea" rows="4" cols="50" required />
           <span>Write Your Description Here...</span>
         </div>
         <Container
@@ -73,22 +73,22 @@ const NewTicket = ({ state, toggle }) => {
           <p>Drag 'n' drop some files here, or click to select files</p>
           <aside>{thumbs}</aside>
         </Container>
-        <div className='btn-container'>
-          <div className='checkbox'>
-            <input type='checkbox' />
+        <div className="btn-container">
+          <div className="checkbox">
+            <input type="checkbox" />
             <span>Urgent?</span>
           </div>
 
-          <button className='submit-btn'>Submit</button>
+          <button className="submit-btn">Submit</button>
         </div>
       </Card>
     </MainContainer>
-  )
-}
+  );
+};
 
 const MainContainer = styled.div`
   ${tw`
-    absolute
+    fixed
     top-0
     bottom-0
     left-0
@@ -105,7 +105,7 @@ const MainContainer = styled.div`
     ease-in-out
     z-20
   `}
-`
+`;
 
 const Card = styled.div`
   ${tw`
@@ -241,7 +241,7 @@ const Card = styled.div`
     `}
     }
   }
-`
+`;
 
 const Container = styled.div`
   flex: 1;
@@ -288,6 +288,6 @@ const Container = styled.div`
       `}
     }
   }
-`
+`;
 
-export default NewTicket
+export default NewTicket;

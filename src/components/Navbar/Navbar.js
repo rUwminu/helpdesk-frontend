@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+
+import { useDispatch } from "react-redux";
+import { signout } from "../../redux/action/userAction";
 
 // Svg
 import Logo from "../../assets/image/Logo.svg";
@@ -12,8 +16,10 @@ import { ExpandMore, Logout, AssignmentInd } from "@mui/icons-material";
 
 const Navbar = () => {
   let lastScroll = 0;
+  const history = useHistory();
+  const dispatch = useDispatch();
   const userSignIn = useSelector((state) => state.userSignIn);
-  const { userInfo, loading } = userSignIn;
+  const { user, loading } = userSignIn;
 
   const [isActive, setIsActive] = useState(false);
   const [isScrollTop, setIsScrollTop] = useState(true);
@@ -57,13 +63,18 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = () => {
+    dispatch(signout());
+    history.push("/login");
+  };
+
   return (
     <Container
       className={`${
         isScrollTop ? "py-10 bg-none" : "py-4 bg-gray-900 shadow-md"
       }`}
     >
-      {userInfo && !loading && (
+      {user && !loading && (
         <NavInner>
           <NavLeft>
             <img src={Logo} alt="logo" />
@@ -89,7 +100,7 @@ const Navbar = () => {
 
             <div className="user-info">
               <img src={Avatar} alt="user" />
-              <h2>{userInfo.username}</h2>
+              <h2>{user.username}</h2>
               <ExpandMore
                 onClick={() => setIsDropOption(!isDropOption)}
                 className="icon"
@@ -104,7 +115,7 @@ const Navbar = () => {
                   <h3>Profile</h3>
                   <AssignmentInd className="option-icon" />
                 </div>
-                <div className="option-item">
+                <div onClick={() => handleLogout()} className="option-item">
                   <h3>Logout</h3>
                   <Logout className="option-icon" />
                 </div>

@@ -1,90 +1,173 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  filterTicketsUrgent,
+  filterTicketsByDeparment,
+} from "../../redux/action/ticketAction";
 
 const Sidebar = () => {
-  const [isComplete, setIsComplete] = useState(false)
+  const dispatch = useDispatch();
+
+  const [isUrgent, setIsUrgent] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user, loading } = userSignIn;
+
+  const handleToggleIsUrgent = () => {
+    setIsUrgent(!isUrgent);
+
+    if (isUrgent) {
+      dispatch(filterTicketsUrgent(false));
+    } else {
+      dispatch(filterTicketsUrgent(true));
+    }
+  };
 
   return (
     <Container>
-      <div className='items-list'>
-        <h2>Type Ticket</h2>
-        <label className='cb-container'>
-          <input type='checkbox' value='remote' />
-          <span className='check'></span>
-          Manager
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' value='remote' />
-          <span className='check'></span>
-          CS
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' name='remote' />
-          <span className='check'></span>
-          QA
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' name='remote' />
-          <span className='check'></span>
-          Account
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' name='remote' />
-          <span className='check'></span>
-          Production
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' name='remote' />
-          <span className='check'></span>
-          Printing
-        </label>
-        <label className='cb-container'>
-          <input type='checkbox' name='remote' />
-          <span className='check'></span>
-          Cutting
-        </label>
-      </div>
-      <div className='items-list'>
+      {user && user.isAdmin && (
+        <div className="items-list">
+          <h2>Type Ticket</h2>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="Manager"
+            />
+            <span className="check"></span>
+            Manager
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="EDP"
+            />
+            <span className="check"></span>
+            EDP
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="CS"
+            />
+            <span className="check"></span>
+            CS
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="QA"
+            />
+            <span className="check"></span>
+            QA
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="Account"
+            />
+            <span className="check"></span>
+            Account
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="Production"
+            />
+            <span className="check"></span>
+            Production
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="Printing"
+            />
+            <span className="check"></span>
+            Printing
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={(e) =>
+                dispatch(filterTicketsByDeparment(e.target.value))
+              }
+              type="checkbox"
+              value="Cutting"
+            />
+            <span className="check"></span>
+            Cutting
+          </label>
+        </div>
+      )}
+      <div className="items-list">
         <h2>Emergency</h2>
-        <label className='cb-container'>
-          <input type='checkbox' value='verify' />
-          <span className='check'></span>
+        <label className="cb-container">
+          <input
+            onChange={() => handleToggleIsUrgent()}
+            type="checkbox"
+            value="verify"
+            checked={isUrgent ? "checked" : ""}
+          />
+          <span className="check"></span>
           Urgent
         </label>
       </div>
-      <div className='items-list'>
-        <h2>Sort Ticket</h2>
-        <label className='cb-container'>
-          <input
-            onClick={() => setIsComplete(false)}
-            type='checkbox'
-            checked={!isComplete ? true : false}
-            value='entry'
-          />
-          <span className='check'></span>
-          In Process
-        </label>
-        <label className='cb-container'>
-          <input
-            onClick={() => setIsComplete(true)}
-            type='checkbox'
-            checked={isComplete ? true : false}
-            value='inter'
-          />
-          <span className='check'></span>
-          Closed Ticket
-        </label>
-      </div>
+      {user && user.isAdmin && (
+        <div className="items-list">
+          <h2>Sort Ticket</h2>
+          <label className="cb-container">
+            <input
+              onClick={() => setIsComplete(false)}
+              type="checkbox"
+              checked={!isComplete ? true : false}
+              value="entry"
+            />
+            <span className="check"></span>
+            In Process
+          </label>
+          <label className="cb-container">
+            <input
+              onClick={() => setIsComplete(true)}
+              type="checkbox"
+              checked={isComplete ? true : false}
+              value="inter"
+            />
+            <span className="check"></span>
+            Closed Ticket
+          </label>
+        </div>
+      )}
     </Container>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   ${tw`
     px-2
+    w-44
     h-full
-    w-full
     max-w-[10rem]
     flex
     flex-col
@@ -143,7 +226,7 @@ const Container = styled.div`
       `}
 
         :before {
-          content: '';
+          content: "";
           box-shadow: 0 -13.5px 0 rgba(249, 250, 251, 1);
 
           ${tw`
@@ -159,7 +242,7 @@ const Container = styled.div`
         }
 
         :after {
-          content: '';
+          content: "";
           box-shadow: 13.5px 0 0 rgba(249, 250, 251, 1);
 
           ${tw`
@@ -195,6 +278,6 @@ const Container = styled.div`
       }
     }
   }
-`
+`;
 
-export default Sidebar
+export default Sidebar;

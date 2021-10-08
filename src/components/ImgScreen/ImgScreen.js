@@ -1,38 +1,38 @@
-import React from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const ImgScreen = ({ index, state, toggle }) => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const ticketList = useSelector((state) => state.ticketList)
-  const { tickets } = ticketList
+  const ticketList = useSelector((state) => state.ticketList);
+  const { tickets } = ticketList;
 
   const getImagefromTickets = () => {
-    const ticket = tickets.find((x) => x.id === id)
-    const tempImgArray = ticket.images
+    const ticket = tickets.find((x) => x.id === id);
+    const tempImgArray = ticket.images;
 
-    console.log(tempImgArray[index])
-    return tempImgArray[index]
-  }
+    console.log(tempImgArray[index]);
+    return tempImgArray[index];
+  };
 
   return (
     <ImgBgContainer onClick={() => toggle()}>
       <img
         onClick={() => toggle()}
-        className='img-view'
+        className="img-view"
         src={getImagefromTickets()}
-        alt='imgScreen'
+        alt="imgScreen"
       />
     </ImgBgContainer>
-  )
-}
+  );
+};
 
 const ImgBgContainer = styled.div`
   ${tw`
-    absolute
+    fixed
     top-0
     left-0
     w-screen
@@ -42,6 +42,7 @@ const ImgBgContainer = styled.div`
     justify-center
     bg-gray-800
     bg-opacity-50
+    z-30
   `}
 
   .img-view {
@@ -52,6 +53,6 @@ const ImgBgContainer = styled.div`
         object-cover
     `}
   }
-`
+`;
 
-export default ImgScreen
+export default ImgScreen;

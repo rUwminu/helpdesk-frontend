@@ -21,17 +21,19 @@ const Home = () => {
   const [isMedium, setIsMedium] = useState(false);
   const [isSmall, setIsIsSmall] = useState(false);
 
-  const userSignIn = useSelector((state) => state.userSignIn);
-  const { userInfo } = userSignIn;
+  // const userSignIn = useSelector((state) => state.userSignIn);
+  // const { user } = userSignIn;
 
-  const { loading, data } = useQuery(
-    userInfo.isAdmin ? GET_INPROCESS_TICKETS : GET_SELF_TICKETS,
-    {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    }
-  );
+  // const { loading, data } = useQuery(
+  //   user.isAdmin ? GET_INPROCESS_TICKETS : GET_SELF_TICKETS,
+  //   {
+  //     context: {
+  //       headers: {
+  //         Authorization: `Bearer${" "}${user.token}`,
+  //       },
+  //     },
+  //   }
+  // );
 
   const handleCheckWidthM = () => {
     let windowWidth = window.innerWidth;
@@ -59,11 +61,15 @@ const Home = () => {
     return FC[0].slice(0, 1) + FC[1].slice(0, 1);
   };
 
-  useEffect(() => {
-    if (!loading && data) {
-      dispatch(getTicket(data.getInProcessTickets));
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (!loading && data) {
+  //     if (user.isAdmin) {
+  //       dispatch(getTicket(data.getInProcessTickets));
+  //     } else {
+  //       dispatch(getTicket(data.getSelfTicket));
+  //     }
+  //   }
+  // }, [data]);
 
   useEffect(() => {
     handleCheckWidthM();
@@ -91,7 +97,7 @@ const Home = () => {
         )}
         <div className="bottom-container">
           {!isMedium && <Sidebar />}
-          <JobCard />
+          <JobCard location={"/home"} />
           {!isSmall && <JobInfo />}
         </div>
       </InnerContainer>
@@ -141,14 +147,14 @@ const GET_SELF_TICKETS = gql`
 
 const Container = styled.section`
   ${tw`
-    h-screen
+    pt-28
+    pb-10
+    min-h-screen
     w-full
     flex
     items-center
     justify-center
     bg-gray-900
-    overflow-y-hidden
-    scrollbar-hide
   `}
 `;
 
@@ -222,9 +228,9 @@ const AbsoluteFilterList = styled.div`
     absolute
     top-[7rem]
     right-4
-
-    w-44
-    px-4
+    h-full
+    max-h-80
+    px-4  
     bg-gray-800
     rounded-md
     transition-all
@@ -232,6 +238,7 @@ const AbsoluteFilterList = styled.div`
     ease-linear
     z-10
   `}
+  box-shadow: -1px -3px 207px -29px rgba(0,0,0,1);
 `;
 
 export default Home;
