@@ -1,25 +1,20 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
-import { useSelector, useDispatch } from "react-redux";
-import { getTicket } from "../../redux/action/ticketAction";
-import {
-  Sidebar,
-  JobCard,
-  JobInfo,
-  SidebarSmall,
-} from "../../components/index";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
+import { useSelector, useDispatch } from 'react-redux'
+import { getTicket } from '../../redux/action/ticketAction'
+import { Sidebar, JobCard, JobInfo, SidebarSmall } from '../../components/index'
 
 // Icon
-import { ExpandMore } from "@mui/icons-material";
+import { ExpandMore } from '@mui/icons-material'
 
 const Home = () => {
-  const dispatch = useDispatch();
-  const [isActive, setIsActive] = useState(false);
-  const [isMedium, setIsMedium] = useState(false);
-  const [isSmall, setIsIsSmall] = useState(false);
+  const dispatch = useDispatch()
+  const [isActive, setIsActive] = useState(false)
+  const [isMedium, setIsMedium] = useState(false)
+  const [isSmall, setIsIsSmall] = useState(false)
 
   // const userSignIn = useSelector((state) => state.userSignIn);
   // const { user } = userSignIn;
@@ -36,30 +31,30 @@ const Home = () => {
   // );
 
   const handleCheckWidthM = () => {
-    let windowWidth = window.innerWidth;
+    let windowWidth = window.innerWidth
 
     if (windowWidth < 1185) {
-      setIsMedium(true);
+      setIsMedium(true)
     } else if (windowWidth > 1185) {
-      setIsMedium(false);
+      setIsMedium(false)
     }
-  };
+  }
 
   const handleCheckWidthS = () => {
-    let windowWidth = window.innerWidth;
+    let windowWidth = window.innerWidth
 
     if (windowWidth < 994) {
-      setIsIsSmall(true);
+      setIsIsSmall(true)
     } else if (windowWidth > 994) {
-      setIsIsSmall(false);
+      setIsIsSmall(false)
     }
-  };
+  }
 
   const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
+    const FC = username.split(' ')
 
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
-  };
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
+  }
 
   // useEffect(() => {
   //   if (!loading && data) {
@@ -72,38 +67,38 @@ const Home = () => {
   // }, [data]);
 
   useEffect(() => {
-    handleCheckWidthM();
-    handleCheckWidthS();
-    window.addEventListener("resize", handleCheckWidthM);
-    window.addEventListener("resize", handleCheckWidthS);
-  }, []);
+    handleCheckWidthM()
+    handleCheckWidthS()
+    window.addEventListener('resize', handleCheckWidthM)
+    window.addEventListener('resize', handleCheckWidthS)
+  }, [])
 
   return (
     <Container>
       <InnerContainer>
         {isMedium && (
-          <div className="top-container">
-            <div onClick={() => setIsActive(!isActive)} className="btn">
+          <div className='top-container'>
+            <div onClick={() => setIsActive(!isActive)} className='btn'>
               <h2>Filter</h2>
-              <ExpandMore className="filter-icon" />
+              <ExpandMore className='filter-icon' />
             </div>
             <AbsoluteFilterList
               onMouseLeave={() => setIsActive(false)}
-              className={`${isActive ? "h-[36rem]" : "h-0"}`}
+              className={`${isActive ? 'h-[36rem]' : 'h-0'}`}
             >
               <SidebarSmall />
             </AbsoluteFilterList>
           </div>
         )}
-        <div className="bottom-container">
+        <div className='bottom-container'>
           {!isMedium && <Sidebar />}
-          <JobCard location={`${isSmall ? "/ticket_detail" : "/home"}`} />
+          <JobCard location={`${isSmall ? 'ticket_detail' : 'home'}`} />
           {!isSmall && <JobInfo />}
         </div>
       </InnerContainer>
     </Container>
-  );
-};
+  )
+}
 
 const GET_INPROCESS_TICKETS = gql`
   {
@@ -123,7 +118,7 @@ const GET_INPROCESS_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const GET_SELF_TICKETS = gql`
   {
@@ -143,7 +138,7 @@ const GET_SELF_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const Container = styled.section`
   ${tw`
@@ -156,7 +151,7 @@ const Container = styled.section`
     justify-center
     bg-gray-900
   `}
-`;
+`
 
 const InnerContainer = styled.div`
   ${tw`
@@ -221,7 +216,7 @@ const InnerContainer = styled.div`
       overflow-y-hidden
     `}
   }
-`;
+`
 
 const AbsoluteFilterList = styled.div`
   ${tw`
@@ -239,6 +234,6 @@ const AbsoluteFilterList = styled.div`
     z-10
   `}
   box-shadow: -1px -3px 207px -29px rgba(0,0,0,1);
-`;
+`
 
-export default Home;
+export default Home

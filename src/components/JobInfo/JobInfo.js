@@ -1,106 +1,109 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { useParams, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { useParams, Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import moment from 'moment'
 
 // Icons
-import { CheckCircle } from "@mui/icons-material";
+import { CheckCircle } from '@mui/icons-material'
 
 // Component
-import { ImgScreen } from "../index";
+import { ImgScreen } from '../index'
 
 const JobInfo = () => {
-  const { id } = useParams();
-  const [isFilter, setIsFilter] = useState(null);
-  const [imgIndex, setImgIndex] = useState(null);
-  const [isView, setIsView] = useState(false);
+  const { id } = useParams()
+  const [isFilter, setIsFilter] = useState(null)
+  const [imgIndex, setImgIndex] = useState(null)
+  const [isView, setIsView] = useState(false)
 
-  const ticketList = useSelector((state) => state.ticketList);
-  const { tickets, loading } = ticketList;
+  const ticketList = useSelector((state) => state.ticketList)
+  const { tickets, loading } = ticketList
 
   const getJobDetail = () => {
     if (id) {
-      const flitedTicket = tickets.find((ticket) => ticket.id === id);
-      setIsFilter(flitedTicket);
+      const flitedTicket = tickets.find((ticket) => ticket.id === id)
+      setIsFilter(flitedTicket)
     } else {
-      setIsFilter(tickets[0]);
+      setIsFilter(tickets[0])
     }
-  };
+  }
 
   useEffect(() => {
     if (tickets) {
-      getJobDetail();
+      getJobDetail()
     }
-  }, [id, tickets]);
+  }, [id, tickets])
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30);
+    const title = body.slice(0, 30)
 
-    return title;
-  };
+    return title
+  }
 
   const handleImgClick = (index) => {
-    document.body.style.overflow = "hidden";
-    setImgIndex(index);
-    setIsView(true);
-  };
+    document.body.style.overflow = 'hidden'
+    setImgIndex(index)
+    setIsView(true)
+  }
 
   const handleCloseScreen = () => {
-    document.body.style.overflowY = "scroll";
-    setImgIndex(null);
-    setIsView(false);
-  };
+    document.body.style.overflowY = 'scroll'
+    setImgIndex(null)
+    setIsView(false)
+  }
 
   return (
     <>
       {!loading && isFilter && (
         <Container>
-          <div className="title-container">
-            <div className="title-info">
+          <div className='title-container'>
+            <div className='title-info'>
               <h1>{getTitleFromBody(isFilter.body)}</h1>
               <p>{isFilter.typeTicket}</p>
             </div>
-            <div className="title-postby">
+            <div className='title-postby'>
               <h2>Posted 4 days ago</h2>
               <p>by {isFilter.username}</p>
             </div>
           </div>
-          <div className="job-highlight">
-            <div className="list-items">
+          <div className='job-highlight'>
+            <div className='list-items'>
               <h3>Ticket Level</h3>
-              <p>{isFilter.isUrgent ? "Urgent" : "Not Urgent"}</p>
+              <p>{isFilter.isUrgent ? 'Urgent' : 'Not Urgent'}</p>
             </div>
-            <div className="list-items">
+            <div className='list-items'>
               <h3>Location</h3>
               <p>{isFilter.typeTicket}</p>
             </div>
-            <div className="list-items">
+            <div className='list-items'>
               <h3>Comments</h3>
               <p>{isFilter.comments.length}</p>
             </div>
           </div>
-          <div className="job-desc">
+          <div className='job-desc'>
             <h2>Description</h2>
             <p>{isFilter.body}</p>
           </div>
           {isFilter.images.length > 0 && (
-            <div className="job-img">
+            <div className='job-img'>
               <h2>Image Attached</h2>
-              <div className="img-container">
+              <div className='img-container'>
                 {isFilter.images.map((x, index) => (
                   <img
                     onClick={() => handleImgClick(index)}
                     key={index}
                     src={x}
-                    alt="attachment"
+                    alt='attachment'
                   />
                 ))}
               </div>
             </div>
           )}
-          <Link to={`/ticket_detail/${isFilter.id || id}`} className="more-btn">
+          <Link
+            to={`/helpdesk-frontend/ticket_detail/${isFilter.id || id}`}
+            className='more-btn'
+          >
             More Details
           </Link>
         </Container>
@@ -109,8 +112,8 @@ const JobInfo = () => {
         <ImgScreen index={imgIndex} toggle={handleCloseScreen} />
       )}
     </>
-  );
-};
+  )
+}
 
 const Container = styled.div`
   ${tw`
@@ -287,6 +290,6 @@ const Container = styled.div`
         hover:bg-blue-600
     `}
   }
-`;
+`
 
-export default JobInfo;
+export default JobInfo
