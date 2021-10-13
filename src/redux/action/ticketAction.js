@@ -9,6 +9,10 @@ import {
   IS_URGENT_TRUE,
   IS_URGENT_FALSE,
   FILTER_BY_DEPARMENT,
+  IS_RESOLVED_TRUE,
+  IS_RESOLVED_FALSE,
+  UPDATE_RESOLVED,
+  DELETE_TICKET,
 } from '../constant/ticketConstant'
 
 export const getTicket = (data) => (dispatch) => {
@@ -35,4 +39,22 @@ export const filterTicketsByDeparment = (type) => (dispatch) => {
 
 export const createNewComment = (data) => (dispatch) => {
   dispatch({ type: CREATE_COMMENT_SUCCESS, payload: data })
+}
+
+export const toggleTicketIsResolved = (boo) => (dispatch) => {
+  if (boo) {
+    dispatch({ type: IS_RESOLVED_TRUE })
+  } else if (!boo) {
+    dispatch({ type: IS_RESOLVED_FALSE })
+  }
+}
+
+export const updateTicketIsResolved = (data) => (dispatch) => {
+  if (data) {
+    dispatch({ type: UPDATE_RESOLVED, payload: data })
+  }
+}
+
+export const deleteTicket = (id) => (dispatch) => {
+  dispatch({ type: DELETE_TICKET, payload: id })
 }

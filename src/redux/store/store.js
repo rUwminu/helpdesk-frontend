@@ -1,22 +1,22 @@
-import { applyMiddleware, createStore, compose, combineReducers } from "redux";
-import thunk from "redux-thunk";
+import { applyMiddleware, createStore, compose, combineReducers } from 'redux'
+import thunk from 'redux-thunk'
 
 import {
   userRegisterReducer,
   userSingInReducer,
   userDetailsReducer,
   userUpdateProfileReducer,
-} from "../reducers/userReducer";
+} from '../reducers/userReducer'
 
-import { ticketRequestReducer } from "../reducers/ticketReducer";
+import { ticketRequestReducer } from '../reducers/ticketReducer'
 
 const initialState = {
   userSignIn: {
-    user: localStorage.getItem("user")
-      ? JSON.parse(localStorage.getItem("user"))
+    user: localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user'))
       : null,
   },
-};
+}
 
 const reducer = combineReducers({
   userSignIn: userSingInReducer,
@@ -24,13 +24,13 @@ const reducer = combineReducers({
   userDetails: userDetailsReducer,
   userUpdateProfile: userUpdateProfileReducer,
   ticketList: ticketRequestReducer,
-});
+})
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 const store = createStore(
   reducer,
   initialState,
   composeEnhancer(applyMiddleware(thunk))
-);
+)
 
-export default store;
+export default store

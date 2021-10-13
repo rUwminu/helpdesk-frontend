@@ -10,7 +10,7 @@ import {
 import { useSelector } from 'react-redux'
 
 import { Navbar } from './components/index'
-import { Home, Login, TicketDetail } from './pages/index'
+import { Home, Login, TicketDetail, TicketPanel } from './pages/index'
 
 function App() {
   const client = new ApolloClient({
@@ -41,6 +41,9 @@ function App() {
               </Route>
               <Route path={`${baseUrl}/ticket_detail/:id`}>
                 <TicketDetail />
+              </Route>
+              <Route path={`${baseUrl}/ticket_panel`}>
+                <TicketPanel />
               </Route>
             </>
           ) : (

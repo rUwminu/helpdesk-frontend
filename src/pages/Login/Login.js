@@ -42,7 +42,7 @@ const Login = () => {
       dispatch(signin(userData))
     },
     onError(err) {
-      console.log(err.graphQLErrors[0].extensions.exception.errors, dispatch)
+      console.log(err.graphQLErrors[0].extensions.exception.errors)
     },
     variables: inputValue,
   })

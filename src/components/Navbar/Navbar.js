@@ -85,7 +85,9 @@ const Navbar = () => {
           {!isMobile && (
             <NavMid>
               <div className='nav-link'>Manage User</div>
-              <div className='nav-link'>Watch Ticket Stats</div>
+              <Link to='/helpdesk-frontend/ticket_panel' className='nav-link'>
+                Watch Ticket Stats
+              </Link>
               <div className='nav-link'>Sponsor us</div>
             </NavMid>
           )}

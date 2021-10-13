@@ -4,8 +4,12 @@ import {
   TICKET_FAIL,
   IS_URGENT_TRUE,
   IS_URGENT_FALSE,
+  IS_RESOLVED_TRUE,
+  IS_RESOLVED_FALSE,
   FILTER_BY_DEPARMENT,
   CLEAR_ALL_STATE,
+  UPDATE_RESOLVED,
+  DELETE_TICKET,
 } from '../constant/ticketConstant'
 
 import {
@@ -14,7 +18,7 @@ import {
 } from '../constant/commentConstant'
 
 export const ticketRequestReducer = (
-  state = { filterType: [], tickets: [] },
+  state = { filterType: [], tickets: [], resolved: false },
   action
 ) => {
   switch (action.type) {
@@ -28,6 +32,29 @@ export const ticketRequestReducer = (
       return { ...state, isUrgent: true }
     case IS_URGENT_FALSE:
       return { ...state, isUrgent: false }
+    case IS_RESOLVED_TRUE:
+      return { ...state, resolved: true }
+    case IS_RESOLVED_FALSE:
+      return { ...state, resolved: false }
+    case UPDATE_RESOLVED:
+      const updateTicketResolve = state.tickets.find(
+        (x) => x.id === action.payload.id
+      )
+
+      if (updateTicketResolve) {
+        const updateResolved = {
+          ...updateTicketResolve,
+          isResolved: action.payload.isResolved,
+        }
+
+        return {
+          ...state,
+          tickets: state.tickets.map((x) =>
+            x.id === action.payload.id ? updateResolved : x
+          ),
+        }
+      }
+      return
     case FILTER_BY_DEPARMENT:
       const newType = action.payload
       const existItem = state.filterType
@@ -67,6 +94,11 @@ export const ticketRequestReducer = (
         }
       }
       return
+    case DELETE_TICKET:
+      return {
+        ...state,
+        tickets: state.tickets.filter((x) => x.id !== action.payload),
+      }
     case CLEAR_ALL_STATE:
       return { loading: true }
     default:

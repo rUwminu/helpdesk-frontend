@@ -4,10 +4,14 @@ import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import moment from 'moment'
 
-import { getTicket } from '../../redux/action/ticketAction'
+import {
+  getTicket,
+  updateTicketIsResolved,
+  deleteTicket,
+} from '../../redux/action/ticketAction'
 
 // Component
 import {
@@ -18,12 +22,18 @@ import {
 } from '../../components/index'
 
 // Icons
-import { ChevronRight, Add } from '@mui/icons-material'
+import {
+  ChevronRight,
+  ChevronLeft,
+  Add,
+  DeleteForever,
+} from '@mui/icons-material'
 
 const TicketDetail = () => {
   const dispatch = useDispatch()
   const { id } = useParams()
 
+  const [isSmall, setIsSmall] = useState(false)
   const [isMedium, setIsMedium] = useState(false)
   const [isFilter, setIsFilter] = useState(null)
   const [isSideOpen, setIsSideOpen] = useState(true)
@@ -35,16 +45,78 @@ const TicketDetail = () => {
   const { user } = userSignIn
 
   const ticketList = useSelector((state) => state.ticketList)
-  const { tickets, loading } = ticketList
+  const { tickets, loading, resolved } = ticketList
+
+  const checkTicketResolveType = () => {
+    if (!resolved) {
+      return GET_INPROCESS_TICKETS
+    } else if (resolved) {
+      return GET_COMPLETED_TICKETS
+    }
+  }
 
   const { loading: getTicketLoading, data } = useQuery(
-    user.isAdmin ? GET_INPROCESS_TICKETS : GET_SELF_TICKETS,
+    user.isAdmin ? checkTicketResolveType() : GET_SELF_TICKETS,
     {
       context: {
         headers: {
           Authorization: `Bearer${' '}${user.token}`,
         },
       },
+    }
+  )
+
+  const [UpdateTicketResolved, { loading: resolvedLoading }] = useMutation(
+    UPDATE_TICKET_RESOLVED,
+    {
+      context: {
+        headers: {
+          Authorization: `Bearer${' '}${user.token}`,
+        },
+      },
+      update(_, { data: { updateResolved: ticketData } }) {
+        dispatch(updateTicketIsResolved(ticketData))
+      },
+      onError(err) {
+        console.log(err)
+      },
+      variables: { ticketId: id.toString() },
+    }
+  )
+
+  const [UpdateTicketREOpen, { loading: reOpenLoading }] = useMutation(
+    UPDATE_TICKET_RE_OPEN,
+    {
+      context: {
+        headers: {
+          Authorization: `Bearer${' '}${user.token}`,
+        },
+      },
+      update(_, { data: { updateResolved: ticketData } }) {
+        dispatch(updateTicketIsResolved(ticketData))
+      },
+      onError(err) {
+        console.log(err)
+      },
+      variables: { ticketId: id.toString() },
+    }
+  )
+
+  const [DeleteTicket, { loading: deleteLoading }] = useMutation(
+    DELETE_TICKET,
+    {
+      context: {
+        headers: {
+          Authorization: `Bearer${' '}${user.token}`,
+        },
+      },
+      update() {
+        dispatch(deleteTicket(id))
+      },
+      onError(err) {
+        console.log(err)
+      },
+      variables: { ticketId: id.toString() },
     }
   )
 
@@ -58,6 +130,15 @@ const TicketDetail = () => {
     } else if (windowWidth > 1185) {
       setIsMedium(false)
       setIsSideOpen(true)
+    }
+  }
+  const handleCheckWidthS = () => {
+    let windowWidth = window.innerWidth
+
+    if (windowWidth < 478) {
+      setIsSmall(true)
+    } else if (windowWidth > 478) {
+      setIsSmall(false)
     }
   }
 
@@ -87,8 +168,10 @@ const TicketDetail = () => {
   }, [id, tickets, data])
 
   useEffect(() => {
-    //handleCheckWidthM();
+    handleCheckWidthM()
+    handleCheckWidthS()
     window.addEventListener('resize', handleCheckWidthM)
+    window.addEventListener('resize', handleCheckWidthS)
   }, [])
 
   const handleImgClick = (index) => {
@@ -115,13 +198,21 @@ const TicketDetail = () => {
     return title
   }
 
+  const handleUpdateTicket = () => {
+    if (!isFilter.isResolved) {
+      UpdateTicketResolved()
+    } else if (isFilter.isResolved) {
+      UpdateTicketREOpen()
+    }
+  }
+
   return (
     <Container>
       <InnerContainer>
         <div
           className={`left-bar ${
-            isSideOpen ? 'w-[27rem] min-w-[27rem]' : 'w-20'
-          }`}
+            isSideOpen ? 'w-full max-w-[27rem]' : 'w-20'
+          } ${!isSmall && isSideOpen && 'min-w-[27rem]'}`}
         >
           {isSideOpen && <JobCard location={'ticket_detail'} />}
           {!isSideOpen && (
@@ -149,89 +240,113 @@ const TicketDetail = () => {
           )}
           <ChevronRight
             onClick={() => setIsSideOpen(!isSideOpen)}
-            className={`more-icon ${
-              isSideOpen ? 'left-[24.4rem]' : 'left-[2.5rem] rotate-0'
-            }`}
+            className={`more-icon ${isSideOpen ? '' : 'rotate-0'}`}
           />
         </div>
         {!loading && isFilter && (
-          <>
-            <div className='right-form'>
-              <div className='title-container'>
-                <div className='title-info'>
-                  <h1>{getTitleFromBody(isFilter.body)}</h1>
-                  <p>{isFilter.typeTicket}</p>
-                </div>
-                <div className='title-postby'>
-                  <h2>Posted 4 days ago</h2>
-                  <p>by {isFilter.username}</p>
-                </div>
-              </div>
-              <div className='job-highlight'>
-                <div className='list-items'>
-                  <h3>Ticket Level</h3>
-                  <p>{isFilter.isUrgent ? 'Urgent' : 'Not Urgent'}</p>
-                </div>
-                <div className='list-items'>
-                  <h3>Location</h3>
-                  <p>{isFilter.typeTicket}</p>
-                </div>
-                <div className='list-items'>
-                  <h3>Comments</h3>
-                  <p>{isFilter.comments.length}</p>
+          <RightContainer
+            className={`${isSmall && isSideOpen ? 'hidden' : 'inline-flex'}`}
+          >
+            <div className='right-top'>
+              <Link to='/helpdesk-frontend/home' className='back-btn'>
+                <ChevronLeft className='back-icon' />
+                To Home
+              </Link>
+              <div className='right-btn-container'>
+                <DeleteForever
+                  onClick={() => DeleteTicket()}
+                  className='delete-btn'
+                />
+                <div
+                  onClick={() => handleUpdateTicket()}
+                  className={`resolve-btn ${
+                    isFilter.isResolved
+                      ? 'bg-red-600 hover:bg-red-500'
+                      : 'bg-green-600 hover:bg-green-500'
+                  }`}
+                >
+                  {isFilter.isResolved ? 'Re-Open' : 'Resolve'}
                 </div>
               </div>
-              <div className='job-desc'>
-                <h2>Description</h2>
-                <p>{isFilter.body}</p>
-              </div>
-              {isFilter.images.length > 0 && (
-                <div className='job-img'>
-                  <h2>Image Attached</h2>
-                  <div className='img-container'>
-                    {isFilter.images.map((x, index) => (
-                      <img
-                        onClick={() => handleImgClick(index)}
-                        key={index}
-                        src={x}
-                        alt='attachment'
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {isFilter.comments.length > 0 && (
-                <div className='ticket-comments'>
-                  <h2>Comments</h2>
-                  <div className='inner-container'>
-                    {isFilter.comments
-                      .slice(0)
-                      .reverse()
-                      .map((x) => (
-                        <div className='comment-card' key={x.id}>
-                          <div className='card-userinfo'>
-                            <div className='username-logo'>
-                              {getFirstCharaterOfUsername(x.username)}
-                            </div>
-
-                            <div className='user-detail'>
-                              <h1>{x.username}</h1>
-                              <p>
-                                Commented On{' '}
-                                {moment(x.createdAt).format('Do MMM YYYY')}
-                              </p>
-                            </div>
-                          </div>
-                          <p className='comment-body'>{x.body}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-              {!isFilter.isResolved && <CommentBox />}
             </div>
-          </>
+            <div className='right-form'>
+              <div className='scoll-container'>
+                <div className='title-container'>
+                  <div className='title-info'>
+                    <h1>{getTitleFromBody(isFilter.body)}</h1>
+                    <p>{isFilter.typeTicket}</p>
+                  </div>
+                  <div className='title-postby'>
+                    <h2>Posted 4 days ago</h2>
+                    <p>by {isFilter.username}</p>
+                  </div>
+                </div>
+                <div className='job-highlight hidden md:inline-flex'>
+                  <div className='list-items'>
+                    <h3>Ticket Level</h3>
+                    <p>{isFilter.isUrgent ? 'Urgent' : 'Not Urgent'}</p>
+                  </div>
+                  <div className='list-items'>
+                    <h3>Location</h3>
+                    <p>{isFilter.typeTicket}</p>
+                  </div>
+                  <div className='list-items'>
+                    <h3>Comments</h3>
+                    <p>{isFilter.comments.length}</p>
+                  </div>
+                </div>
+                <div className='job-desc'>
+                  <h2>Description</h2>
+                  <p>{isFilter.body}</p>
+                </div>
+                {isFilter.images.length > 0 && (
+                  <div className='job-img'>
+                    <h2>Image Attached</h2>
+                    <div className='img-container'>
+                      {isFilter.images.map((x, index) => (
+                        <img
+                          onClick={() => handleImgClick(index)}
+                          key={index}
+                          src={x}
+                          alt='attachment'
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {isFilter.comments.length > 0 && (
+                  <div className='ticket-comments'>
+                    <h2>Comments</h2>
+                    <div className='inner-container'>
+                      {isFilter.comments
+                        .slice(0)
+                        .reverse()
+                        .map((x) => (
+                          <div className='comment-card' key={x.id}>
+                            <div className='card-userinfo'>
+                              <div className='username-logo'>
+                                {getFirstCharaterOfUsername(x.username)}
+                              </div>
+
+                              <div className='user-detail'>
+                                <h1>{x.username}</h1>
+                                <p>
+                                  Commented On{' '}
+                                  {moment(x.createdAt).format('Do MMM YYYY')}
+                                </p>
+                              </div>
+                            </div>
+                            <p className='comment-body'>{x.body}</p>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {!isFilter.isResolved && <CommentBox />}
+              </div>
+            </div>
+          </RightContainer>
         )}
       </InnerContainer>
       <NewTicket state={isCreateTicketOpen} toggle={setIsCreateTicketOpen} />
@@ -245,6 +360,27 @@ const TicketDetail = () => {
 const GET_INPROCESS_TICKETS = gql`
   {
     getInProcessTickets {
+      id
+      typeTicket
+      username
+      body
+      images
+      isUrgent
+      isResolved
+      comments {
+        id
+        username
+        body
+        createdAt
+      }
+      createdAt
+    }
+  }
+`
+
+const GET_COMPLETED_TICKETS = gql`
+  {
+    getCompletedTickets {
       id
       typeTicket
       username
@@ -284,12 +420,36 @@ const GET_SELF_TICKETS = gql`
   }
 `
 
+const UPDATE_TICKET_RESOLVED = gql`
+  mutation updateResolved($ticketId: ID!) {
+    updateResolved(ticketId: $ticketId) {
+      id
+      isResolved
+    }
+  }
+`
+
+const UPDATE_TICKET_RE_OPEN = gql`
+  mutation updateReOpenTicket($ticketId: ID!) {
+    updateReOpenTicket(ticketId: $ticketId) {
+      id
+      isResolved
+    }
+  }
+`
+
+const DELETE_TICKET = gql`
+  mutation deleteTicket($ticketId: ID!) {
+    deleteTicket(ticketId: $ticketId)
+  }
+`
+
 const Container = styled.section`
   ${tw`
-    w-full
-    h-full
+    w-screen
+    h-screen
+    min-h-screen
     pt-28
-    pb-28
     px-4
     lg:px-0
     flex
@@ -297,6 +457,7 @@ const Container = styled.section`
     items-start
     justify-start
     bg-gray-900
+    overflow-x-hidden
   `}
 `
 
@@ -315,8 +476,8 @@ const InnerContainer = styled.div`
     ${tw`
         relative
         pr-8
-        mr-8
-        h-screen
+        h-full
+        min-h-[80vh]
         border-r-2
         border-gray-400
         transition-all
@@ -328,6 +489,7 @@ const InnerContainer = styled.div`
       ${tw`
         absolute
         top-40
+        right-0
         rotate-180
         translate-x-1/2
         h-10
@@ -345,21 +507,171 @@ const InnerContainer = styled.div`
       `}
     }
   }
+`
+
+const ClosedTicketCard = styled.div`
+  ${tw`
+    flex
+    flex-col
+    items-center
+    justify-start
+    max-h-screen
+    overflow-y-scroll
+    scrollbar-hide
+  `}
+
+  .name-box {
+    ${tw`
+        flex
+        items-center
+        justify-center
+        w-10
+        h-10
+        md:w-12
+        md:h-12
+        mb-4
+        text-gray-200
+        bg-gray-700
+        font-semibold
+        hover:bg-gray-600
+        rounded-md
+        transition
+        duration-200
+        ease-in-out
+    `}
+  }
+`
+
+const RightContainer = styled.div`
+  ${tw`
+    flex
+    flex-col
+    w-full
+    h-full
+    pl-8
+  `}
+
+  .right-top {
+    ${tw`
+      mb-3
+      flex
+      items-center
+      justify-between
+    `}
+
+    .back-btn {
+      ${tw`
+        flex
+        items-center
+        justify-center
+        py-1
+        pr-3
+        md:text-lg
+        text-gray-200
+        font-semibold
+        rounded-md
+        transition
+        duration-200
+        ease-in-out
+        overflow-hidden
+      `}
+
+      .back-icon {
+        ${tw`
+          relative
+          text-xl
+          md:text-3xl
+          transition
+          duration-200
+          ease-in-out
+        `}
+      }
+
+      :hover {
+        ${tw`
+          bg-gray-700
+        `}
+
+        .back-icon {
+          ${tw`
+             
+          `}
+          animation: backAnimate 2.5s ease infinite;
+        }
+      }
+    }
+
+    .right-btn-container {
+      ${tw`
+        flex
+        items-center
+        justify-center
+      `}
+
+      .delete-btn {
+        ${tw`
+          h-8
+          w-8
+          p-1
+          mr-2
+          text-red-500
+          transition
+          duration-200
+          ease-in-out
+          rounded-md
+          cursor-pointer
+          hover:bg-gray-700
+        `}
+      }
+
+      .resolve-btn {
+        ${tw`
+          py-1
+          px-4
+          md:px-8
+          text-lg
+          font-semibold
+          tracking-wider       
+          text-gray-200
+          transition
+          duration-200
+          ease-in-out
+          rounded-md
+          cursor-pointer
+        `}
+      }
+    }
+  }
 
   .right-form {
     ${tw`
-        flex-grow
+        w-full
+        h-full
+        max-h-[40rem]
         p-6
         bg-gray-800
         rounded-md
+        overflow-y-scroll
+        scrollbar-hide
     `}
+
+    .scoll-container {
+      ${tw`
+        h-full
+        w-full
+      `}
+    }
 
     .title-container {
       ${tw`
       w-full
       flex
-      items-center
-      justify-between
+      flex-col
+      md:flex-row
+      md:items-center
+      md:justify-between
+      mb-4
+      md:mb-0
     `}
 
       .title-info {
@@ -411,6 +723,8 @@ const InnerContainer = styled.div`
 
     .job-highlight {
       ${tw`
+      hidden
+      md:inline-flex
       my-8
       py-4
       px-6
@@ -564,11 +878,12 @@ const InnerContainer = styled.div`
               flex
               items-center
               justify-center
-              w-10
-              h-10
+              w-8
+              h-8
               md:w-12
               md:h-12
-              text-xl
+              text-base
+              md:text-xl
               font-semibold
               bg-blue-300
               rounded-md
@@ -582,6 +897,8 @@ const InnerContainer = styled.div`
 
             h1 {
               ${tw`
+                text-sm
+                md:text-base
                 font-semibold
                 text-gray-200
               `}
@@ -589,7 +906,8 @@ const InnerContainer = styled.div`
 
             p {
               ${tw`
-                text-sm
+                text-xs
+                md:text-sm
                 text-gray-300
               `}
             }
@@ -600,42 +918,56 @@ const InnerContainer = styled.div`
           ${tw`
             w-full
             mt-3
+            text-sm
+            md:text-base
             text-gray-200
           `}
         }
       }
     }
   }
-`
 
-const ClosedTicketCard = styled.div`
-  ${tw`
-    flex
-    flex-col
-    items-center
-    justify-start
-    max-h-screen
-    overflow-y-scroll
-    scrollbar-hide
-  `}
-
-  .name-box {
-    ${tw`
-        flex
-        items-center
-        justify-center
-        w-12
-        h-12
-        mb-4
-        text-gray-200
-        bg-gray-700
-        font-semibold
-        hover:bg-gray-600
-        rounded-md
-        transition
-        duration-200
-        ease-in-out
-    `}
+  @keyframes backAnimate {
+    20% {
+      ${tw`
+        opacity-0
+        -translate-x-full
+      `}
+    }
+    30% {
+      ${tw`
+        opacity-0
+        translate-x-full
+      `}
+    }
+    40% {
+      ${tw`
+        opacity-100
+        translate-x-0
+        left-1
+      `}
+    }
+    50% {
+      ${tw`
+        left-0
+      `}
+    }
+    55% {
+      ${tw`
+        left-1
+      `}
+    }
+    60% {
+      ${tw`
+        left-0
+      `}
+    }
+    100% {
+      ${tw`
+        left-0
+        translate-x-0
+      `}
+    }
   }
 `
 

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client'
+import { useQuery, useLazyQuery } from '@apollo/client'
 import moment from 'moment'
 
 import { getTicket } from '../../redux/action/ticketAction'
@@ -28,10 +28,24 @@ const JobCard = ({ location }) => {
   const { user } = userSignIn
 
   const ticketList = useSelector((state) => state.ticketList)
-  const { tickets, isUrgent, filterType, loading: ticketLoading } = ticketList
+  const {
+    tickets,
+    isUrgent,
+    filterType,
+    resolved,
+    loading: ticketLoading,
+  } = ticketList
 
-  const { loading, data } = useQuery(
-    user.isAdmin ? GET_INPROCESS_TICKETS : GET_SELF_TICKETS,
+  const checkTicketResolveType = () => {
+    if (!resolved) {
+      return GET_INPROCESS_TICKETS
+    } else if (resolved) {
+      return GET_COMPLETED_TICKETS
+    }
+  }
+
+  const [getTicketOnLoad, { loading, data }] = useLazyQuery(
+    user.isAdmin ? checkTicketResolveType() : GET_SELF_TICKETS,
     {
       context: {
         headers: {
@@ -41,16 +55,34 @@ const JobCard = ({ location }) => {
     }
   )
 
+  // Test Query, ignore this
+  // const [getResolvedTypeTicket, { data: lazyData }] = useLazyQuery(
+  //   GET_COMPLETED_TICKETS,
+  //   {
+  //     context: {
+  //       headers: {
+  //         Authorization: `Bearer${' '}${user.token}`,
+  //       },
+  //     },
+  //   }
+  // )
+
+  // Set data from backend to redux
   useEffect(() => {
     if (!loading && data) {
       if (user.isAdmin) {
-        dispatch(getTicket(data.getInProcessTickets))
+        if (!resolved) {
+          dispatch(getTicket(data.getInProcessTickets))
+        } else {
+          dispatch(getTicket(data.getCompletedTickets))
+        }
       } else {
         dispatch(getTicket(data.getSelfTicket))
       }
     }
   }, [data])
 
+  // Filter Ticket by is Urgent and filter by department type
   useEffect(() => {
     if (tickets) {
       if (isUrgent) {
@@ -74,6 +106,11 @@ const JobCard = ({ location }) => {
       }
     }
   }, [tickets, isUrgent, filterType, loading])
+
+  // Refetch tickets list when user select in process or closed tickets
+  useEffect(() => {
+    getTicketOnLoad()
+  }, [resolved])
 
   const getFirstCharaterOfUsername = (username) => {
     const FC = username.split(' ')
@@ -169,6 +206,27 @@ const GET_INPROCESS_TICKETS = gql`
   }
 `
 
+const GET_COMPLETED_TICKETS = gql`
+  {
+    getCompletedTickets {
+      id
+      typeTicket
+      username
+      body
+      images
+      isUrgent
+      isResolved
+      comments {
+        id
+        username
+        body
+        createdAt
+      }
+      createdAt
+    }
+  }
+`
+
 const GET_SELF_TICKETS = gql`
   {
     getSelfTicket {
@@ -200,7 +258,7 @@ const OuterMainContainer = styled.div`
     h-full
     w-full
     max-h-[50rem]
-    max-w-[26.8rem]
+    max-w-[26.5rem]
   `}
 `
 

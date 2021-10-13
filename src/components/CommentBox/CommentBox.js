@@ -89,7 +89,7 @@ const Container = styled.div`
 
   h1 {
     ${tw`
-        mb-2
+        mb-4
         text-base
         md:text-lg
         text-gray-200
@@ -144,10 +144,12 @@ const Container = styled.div`
 
   .btn {
     ${tw`
+        w-full
+        md:max-w-[14rem]
         py-2
-        px-16
         ml-auto
         text-lg
+        text-center
         font-semibold
         bg-blue-600
         text-gray-200
