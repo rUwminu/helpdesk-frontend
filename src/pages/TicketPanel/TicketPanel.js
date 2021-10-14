@@ -1,52 +1,188 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
+import moment from "moment";
+
+// Redux action
+import { getAllTicketType } from "../../redux/action/ticketAction";
+
+// components
+import { PieChart, LineChartComponent } from "../../components/index";
+
+// mui import
+import PropTypes from "prop-types";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
+function CircularProgressWithLabel(props) {
+  return (
+    <Box className="relative w-full h-full">
+      <CircularProgress
+        className="w-full h-full"
+        variant="determinate"
+        {...props}
+      />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          className="text-2xl text-gray-200"
+        >
+          {`${Math.round(props.value)}%`}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+CircularProgressWithLabel.propTypes = {
+  value: PropTypes.number.isRequired,
+};
+
+const calPercentage = () => {
+  const total = 24;
+  const completion = 13;
+
+  const getpercentage = Math.round((100 / total) * completion);
+
+  return getpercentage;
+};
 
 const TicketPanel = () => {
+  const dispatch = useDispatch();
+  const [reducedType, setReducedType] = useState([]);
+
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
+
+  const ticketList = useSelector((state) => state.ticketList);
+  const { allTicketsType, loading } = ticketList;
+
+  const [getTicketOnLoad, { data }] = useLazyQuery(GET_ALL_TICKETS, {
+    context: {
+      headers: {
+        Authorization: `Bearer${" "}${user.token}`,
+      },
+    },
+  });
+
+  const getTypeValue = () => {
+    const countType = allTicketsType.reduce((acc, type) => {
+      if (type.typeTicket in acc.name) {
+        acc[{ name: type.typeTicket, value: acc.value + 1 }];
+      } else {
+        acc[{ name: type.typeTicket, value: 1 }];
+      }
+      return acc;
+    }, {});
+
+    console.log(countType);
+
+    setReducedType(countType);
+
+    return countType;
+  };
+
+  useEffect(() => {
+    if (allTicketsType.length === 0) {
+      getTicketOnLoad();
+
+      if (data) {
+        dispatch(getAllTicketType(data.getTickets));
+      }
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (allTicketsType.length > 0) {
+      getTypeValue();
+    }
+  }, [allTicketsType]);
+
   return (
     <Container>
-      <div className='inner-container'>
-        <div className='top-container'>
-          <CardContainer>
-            <h1>Ticket Completion</h1>
-            <div className='info-box'>
-              <span className='to-top'>12</span>
-              <div className='stroke' />
-              <span className='to-bot'>16</span>
-            </div>
-          </CardContainer>
-          <CardContainer>
-            <h1>Ticket Urgent</h1>
-            <div className='info-box'>
-              <span className='to-top'>12</span>
-              <div className='stroke' />
-              <span className='to-bot'>16</span>
-            </div>
-          </CardContainer>
-          <CardContainer>
-            <h1>Ticket Completion</h1>
-            <div className='info-box'>
-              <span className='to-top'>12</span>
-              <div className='stroke' />
-              <span className='to-bot'>16</span>
-            </div>
-          </CardContainer>
+      <div className="inner-container">
+        <h1 className="title">Dashboard</h1>
+        <div className="top-container">
+          <div className="left-pie">
+            <CardContainer>
+              <h1>Ticket Completion</h1>
+              <div className="info-box">
+                <CircularProgressWithLabel
+                  className="w-full h-full"
+                  value={calPercentage()}
+                />
+              </div>
+            </CardContainer>
+            <CardContainer>
+              <h1>Ticket Urgent</h1>
+              <div className="info-box">
+                <CircularProgressWithLabel
+                  className="w-full h-full"
+                  value={calPercentage()}
+                />
+              </div>
+            </CardContainer>
+            <CardContainer>
+              <h1>Ticket Completion</h1>
+              <div className="info-box">
+                <CircularProgressWithLabel
+                  className="w-full h-full"
+                  value={calPercentage()}
+                />
+              </div>
+            </CardContainer>
+          </div>
+          <div className="right-pie">
+            <h1>Ticket Requested By Deparment</h1>
+            {reducedType && <PieChart data={reducedType} />}
+          </div>
         </div>
-        <div className='mid-container'>
-          <ChartContainer></ChartContainer>
+        <div className="mid-container">
+          <LineChartComponent grid />
         </div>
-        <div className='bot-container'>
+        <div className="bot-container">
           <RoundChartContainer></RoundChartContainer>
           <TicketTypeListContainer></TicketTypeListContainer>
         </div>
       </div>
     </Container>
-  )
-}
+  );
+};
+
+const GET_ALL_TICKETS = gql`
+  {
+    getTickets {
+      id
+      typeTicket
+      isResolved
+    }
+  }
+`;
+
+const GET_TICKET_STATS = gql`
+  {
+    getTicketStats {
+      _id
+      total
+    }
+  }
+`;
 
 const Container = styled.div`
   ${tw`
@@ -54,9 +190,10 @@ const Container = styled.div`
     items-center
     justify-center
     pt-28
-    w-screen
-    h-screen
+    pb-16
+    w-full
     bg-gray-900
+    overflow-x-hidden
   `}
 
   .inner-container {
@@ -70,22 +207,70 @@ const Container = styled.div`
         flex
         flex-col
         items-start
-        justify-between
+        justify-start
     `}
+
+    .title {
+      ${tw`
+        mb-6
+        text-2xl
+        md:text-4xl
+        text-gray-200
+        font-semibold
+      `}
+    }
   }
 
   .top-container {
     ${tw`
         flex
-        flex-wrap
+        flex-col
+        xl:flex-row
         items-center
         justify-between
         w-full
     `}
+
+    .left-pie {
+      ${tw`
+        w-full
+        flex
+        flex-wrap
+        items-start
+        justify-center
+        xl:justify-start
+      `}
+    }
+
+    .right-pie {
+      ${tw`
+        py-4
+        px-4
+        w-full
+        max-w-2xl
+        flex
+        flex-col
+        items-center
+        justify-center
+        bg-gray-800
+        rounded-md
+      `}
+
+      h1 {
+        ${tw`
+          mb-4
+          text-2xl
+          md:text-3xl
+          text-gray-200
+          font-semibold
+        `}
+      }
+    }
   }
 
   .mid-container {
     ${tw`
+        mt-8
         w-full
     `}
   }
@@ -98,79 +283,56 @@ const Container = styled.div`
         justify-between
     `}
   }
-`
+`;
 
 const CardContainer = styled.div`
   ${tw`
-    mb-4
-    p-6
-    w-full
-    md:max-w-sm
-    bg-gray-700
+    mr-6
+    mb-6
+    py-4
+    px-6
+    w-[14rem]
+    md:w-[16rem]
+    bg-gray-800
     text-gray-200
     rounded-md
   `}
 
   h1 {
     ${tw`
-        text-xl
-        md:text-2xl
+        mb-4
+        text-base
+        md:text-xl
         font-semibold
     `}
   }
 
   .info-box {
     ${tw`
+        relative
         mx-auto
         flex
         items-center
         justify-center
-        h-36
-        w-36
+        h-16
+        w-16
+        md:h-20
+        md:w-20
+        mb-2
     `}
-
-    .stroke {
-      ${tw`
-        mx-4
-        w-1
-        h-full
-        bg-gray-200
-        rotate-[24deg]
-      `}
-    }
-
-    span {
-      ${tw`
-        text-5xl
-      `}
-    }
-
-    .to-top {
-      ${tw`
-        mb-10
-        text-green-600
-      `}
-    }
-
-    .to-bot {
-      ${tw`
-        mt-10
-        text-red-600
-      `}
-    }
   }
-`
+`;
 
 const ChartContainer = styled.div`
   ${tw``}
-`
+`;
 
 const RoundChartContainer = styled.div`
   ${tw``}
-`
+`;
 
 const TicketTypeListContainer = styled.div`
   ${tw``}
-`
+`;
 
-export default TicketPanel
+export default TicketPanel;
