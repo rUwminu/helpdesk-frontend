@@ -147,7 +147,7 @@ const Container = styled.section`
     min-h-screen
     w-full
     flex
-    items-center
+    items-start
     justify-center
     bg-gray-900
   `}
