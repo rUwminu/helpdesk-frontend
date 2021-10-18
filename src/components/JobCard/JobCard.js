@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { gql } from '@apollo/client'
-import { useQuery, useLazyQuery } from '@apollo/client'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { gql } from "@apollo/client";
+import { useQuery, useLazyQuery } from "@apollo/client";
+import moment from "moment";
 
-import { getTicket } from '../../redux/action/ticketAction'
+import { getTicket } from "../../redux/action/ticketAction";
 
 //Icon class
 import {
@@ -15,45 +15,50 @@ import {
   CheckCircle,
   CheckCircleOutline,
   Add,
-} from '@mui/icons-material'
+  ExpandMore,
+} from "@mui/icons-material";
 
-import { NewTicket } from '../index'
+import { NewTicket, TicketCardPH, SidebarSmall } from "../index";
 
-const JobCard = ({ location }) => {
-  const dispatch = useDispatch()
-  const [tempTicketList, setTempTicketList] = useState([])
-  const [isCreateScreen, setIsCreateScreen] = useState(false)
+const JobCard = ({ location, isMedium }) => {
+  const dispatch = useDispatch();
+  const [isActive, setIsActive] = useState(false);
+  const [tempTicketList, setTempTicketList] = useState([]);
+  const [isCreateScreen, setIsCreateScreen] = useState(false);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  // Temp useState
+  const [isLoading, setIsLoading] = useState(true);
 
-  const ticketList = useSelector((state) => state.ticketList)
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
+
+  const ticketList = useSelector((state) => state.ticketList);
   const {
     tickets,
     isUrgent,
     filterType,
     resolved,
     loading: ticketLoading,
-  } = ticketList
+  } = ticketList;
 
   const checkTicketResolveType = () => {
     if (!resolved) {
-      return GET_INPROCESS_TICKETS
+      return GET_INPROCESS_TICKETS;
     } else if (resolved) {
-      return GET_COMPLETED_TICKETS
+      return GET_COMPLETED_TICKETS;
     }
-  }
+  };
 
   const [getTicketOnLoad, { loading, data }] = useLazyQuery(
     user.isAdmin ? checkTicketResolveType() : GET_SELF_TICKETS,
     {
       context: {
         headers: {
-          Authorization: `Bearer${' '}${user.token}`,
+          Authorization: `Bearer${" "}${user.token}`,
         },
       },
     }
-  )
+  );
 
   // Test Query, ignore this
   // const [getResolvedTypeTicket, { data: lazyData }] = useLazyQuery(
@@ -72,118 +77,141 @@ const JobCard = ({ location }) => {
     if (!loading && data) {
       if (user.isAdmin) {
         if (!resolved) {
-          dispatch(getTicket(data.getInProcessTickets))
+          dispatch(getTicket(data.getInProcessTickets));
         } else {
-          dispatch(getTicket(data.getCompletedTickets))
+          dispatch(getTicket(data.getCompletedTickets));
         }
       } else {
-        dispatch(getTicket(data.getSelfTicket))
+        dispatch(getTicket(data.getSelfTicket));
       }
     }
-  }, [data])
+  }, [data]);
 
   // Filter Ticket by is Urgent and filter by department type
   useEffect(() => {
     if (tickets) {
+      setIsLoading(true);
       if (isUrgent) {
-        const tempArray = tickets.filter((x) => x.isUrgent === isUrgent)
+        const tempArray = tickets.filter((x) => x.isUrgent === isUrgent);
 
         if (filterType && filterType.length > 0) {
           setTempTicketList(
             tempArray.filter((x) => filterType.includes(x.typeTicket))
-          )
+          );
+          setIsLoading(false);
         } else {
-          setTempTicketList(tempArray)
+          setTempTicketList(tempArray);
+          setIsLoading(false);
         }
       } else {
         if (filterType && filterType.length > 0) {
           setTempTicketList(
             tickets.filter((x) => filterType.includes(x.typeTicket))
-          )
+          );
+          setIsLoading(false);
         } else {
-          setTempTicketList(tickets)
+          setTempTicketList(tickets);
+          setIsLoading(false);
         }
       }
     }
-  }, [tickets, isUrgent, filterType, loading])
+  }, [tickets, isUrgent, filterType, loading]);
 
   // Refetch tickets list when user select in process or closed tickets
   useEffect(() => {
-    getTicketOnLoad()
-  }, [resolved])
+    getTicketOnLoad();
+  }, [resolved]);
 
   const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(' ')
+    const FC = username.split(" ");
 
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
-  }
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
+  };
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30)
+    const title = body.slice(0, 30);
 
-    return title
-  }
+    return title;
+  };
 
   return (
     <>
       <OuterMainContainer>
         <AbsoluteTopAddButton>
-          <div onClick={() => setIsCreateScreen(true)} className='add-button'>
+          <div onClick={() => setIsCreateScreen(true)} className="add-button">
             <Add /> Add Ticket
           </div>
         </AbsoluteTopAddButton>
-        {!ticketLoading && tempTicketList && (
+        <AbsoluteTopFilterButton>
+          <div onClick={() => setIsActive(!isActive)} className="btn">
+            <h2>Filter</h2>
+            <ExpandMore className="filter-icon" />
+          </div>
+          <AbsoluteFilterList
+            onMouseLeave={() => setIsActive(false)}
+            className={`${isActive ? "h-[36rem]" : "h-0"}`}
+          >
+            <SidebarSmall />
+          </AbsoluteFilterList>
+        </AbsoluteTopFilterButton>
+        {!loading && !isLoading && tempTicketList ? (
           <Container>
             {tempTicketList.map((ticket) => {
               const { id, username, body, isUrgent, typeTicket, createdAt } =
-                ticket
+                ticket;
 
               return (
                 <Link to={`/helpdesk-frontend/${location}/${id}`}>
                   <Card key={id}>
-                    <div className='card-top'>
-                      <div className='logo' alt='logo'>
+                    <div className="card-top">
+                      <div className="logo" alt="logo">
                         {getFirstCharaterOfUsername(username)}
                       </div>
-                      <div className='card-title'>
+                      <div className="card-title">
                         <h2>{getTitleFromBody(body)} ...</h2>
                         <p>
-                          <LocationOnOutlined className='icons' />
+                          <LocationOnOutlined className="icons" />
                           {typeTicket}
                         </p>
                       </div>
                     </div>
-                    <div className='card-bottom'>
-                      <div className='card-tag'>
+                    <div className="card-bottom">
+                      <div className="card-tag">
                         <h2>
-                          Posted On {moment(createdAt).format('Do MMM YYYY')}
+                          Posted On {moment(createdAt).format("Do MMM YYYY")}
                         </h2>
                         <h3>by {username}</h3>
                       </div>
                       {isUrgent ? (
-                        <div className='verify'>
-                          <CheckCircle className='valid icon' />
+                        <div className="verify">
+                          <CheckCircle className="valid icon" />
                           Is Urgent
                         </div>
                       ) : (
-                        <div className='verify'>
-                          <CheckCircleOutline className='invalid icon' />
+                        <div className="verify">
+                          <CheckCircleOutline className="invalid icon" />
                           Not Urgent
                         </div>
                       )}
                     </div>
                   </Card>
                 </Link>
-              )
+              );
             })}
+          </Container>
+        ) : (
+          <Container>
+            <TicketCardPH />
+            <TicketCardPH />
+            <TicketCardPH />
           </Container>
         )}
       </OuterMainContainer>
 
       <NewTicket state={isCreateScreen} toggle={setIsCreateScreen} />
     </>
-  )
-}
+  );
+};
 
 const GET_INPROCESS_TICKETS = gql`
   {
@@ -204,7 +232,7 @@ const GET_INPROCESS_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const GET_COMPLETED_TICKETS = gql`
   {
@@ -225,7 +253,7 @@ const GET_COMPLETED_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const GET_SELF_TICKETS = gql`
   {
@@ -246,7 +274,7 @@ const GET_SELF_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const OuterMainContainer = styled.div`
   ${tw`
@@ -260,7 +288,7 @@ const OuterMainContainer = styled.div`
     max-h-[50rem]
     max-w-[26.5rem]
   `}
-`
+`;
 
 const Container = styled.div`
   ${tw`
@@ -271,7 +299,7 @@ const Container = styled.div`
     overflow-y-scroll
     scrollbar-hide
   `}
-`
+`;
 
 const Card = styled.div`
   ${tw`
@@ -394,7 +422,7 @@ const Card = styled.div`
       }
     }
   }
-`
+`;
 
 const AbsoluteTopAddButton = styled.div`
   ${tw`
@@ -419,6 +447,49 @@ const AbsoluteTopAddButton = styled.div`
       hover:bg-gray-700
     `}
   }
-`
+`;
 
-export default JobCard
+const AbsoluteTopFilterButton = styled.div`
+  ${tw`
+    absolute
+    right-0
+  `}
+
+  .btn {
+    ${tw`
+      flex
+      items-center
+      justify-center
+      py-2
+      px-4
+      text-gray-200
+      bg-gray-800
+      rounded-md
+      transition
+      duration-200
+      ease-in-out
+      cursor-pointer
+      hover:bg-gray-700
+    `}
+  }
+`;
+
+const AbsoluteFilterList = styled.div`
+  ${tw`
+    absolute
+    top-[3rem]
+    right-0
+    h-full
+    max-h-80
+    px-4  
+    bg-gray-800
+    rounded-md
+    transition-all
+    duration-200
+    ease-linear
+    z-10
+  `}
+  box-shadow: -1px -3px 207px -29px rgba(0,0,0,1);
+`;
+
+export default JobCard;

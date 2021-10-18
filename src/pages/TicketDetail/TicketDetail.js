@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
-import { gql } from '@apollo/client'
-import { useQuery, useMutation } from '@apollo/client'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { gql } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import moment from "moment";
 
 import {
   getTicket,
   updateTicketIsResolved,
   deleteTicket,
-} from '../../redux/action/ticketAction'
+} from "../../redux/action/ticketAction";
 
 // Component
 import {
@@ -19,7 +19,8 @@ import {
   ImgScreen,
   JobCard,
   CommentBox,
-} from '../../components/index'
+  TicketDetailPH,
+} from "../../components/index";
 
 // Icons
 import {
@@ -27,325 +28,330 @@ import {
   ChevronLeft,
   Add,
   DeleteForever,
-} from '@mui/icons-material'
+} from "@mui/icons-material";
 
 const TicketDetail = () => {
-  const dispatch = useDispatch()
-  const { id } = useParams()
+  const dispatch = useDispatch();
+  const { id } = useParams();
 
-  const [isSmall, setIsSmall] = useState(false)
-  const [isMedium, setIsMedium] = useState(false)
-  const [isFilter, setIsFilter] = useState(null)
-  const [isSideOpen, setIsSideOpen] = useState(true)
-  const [imgIndex, setImgIndex] = useState(null)
-  const [isView, setIsView] = useState(false)
-  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false)
+  const [isSmall, setIsSmall] = useState(false);
+  const [isMedium, setIsMedium] = useState(false);
+  const [isFilter, setIsFilter] = useState(null);
+  const [isSideOpen, setIsSideOpen] = useState(true);
+  const [imgIndex, setImgIndex] = useState(null);
+  const [isView, setIsView] = useState(false);
+  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
-  const ticketList = useSelector((state) => state.ticketList)
-  const { tickets, loading, resolved } = ticketList
+  const ticketList = useSelector((state) => state.ticketList);
+  const { tickets, loading, resolved } = ticketList;
 
   const checkTicketResolveType = () => {
     if (!resolved) {
-      return GET_INPROCESS_TICKETS
+      return GET_INPROCESS_TICKETS;
     } else if (resolved) {
-      return GET_COMPLETED_TICKETS
+      return GET_COMPLETED_TICKETS;
     }
-  }
+  };
 
   const { loading: getTicketLoading, data } = useQuery(
     user.isAdmin ? checkTicketResolveType() : GET_SELF_TICKETS,
     {
       context: {
         headers: {
-          Authorization: `Bearer${' '}${user.token}`,
+          Authorization: `Bearer${" "}${user.token}`,
         },
       },
     }
-  )
+  );
 
   const [UpdateTicketResolved, { loading: resolvedLoading }] = useMutation(
     UPDATE_TICKET_RESOLVED,
     {
       context: {
         headers: {
-          Authorization: `Bearer${' '}${user.token}`,
+          Authorization: `Bearer${" "}${user.token}`,
         },
       },
       update(_, { data: { updateResolved: ticketData } }) {
-        dispatch(updateTicketIsResolved(ticketData))
+        dispatch(updateTicketIsResolved(ticketData));
       },
       onError(err) {
-        console.log(err)
+        console.log(err);
       },
       variables: { ticketId: id.toString() },
     }
-  )
+  );
 
   const [UpdateTicketREOpen, { loading: reOpenLoading }] = useMutation(
     UPDATE_TICKET_RE_OPEN,
     {
       context: {
         headers: {
-          Authorization: `Bearer${' '}${user.token}`,
+          Authorization: `Bearer${" "}${user.token}`,
         },
       },
       update(_, { data: { updateResolved: ticketData } }) {
-        dispatch(updateTicketIsResolved(ticketData))
+        dispatch(updateTicketIsResolved(ticketData));
       },
       onError(err) {
-        console.log(err)
+        console.log(err);
       },
       variables: { ticketId: id.toString() },
     }
-  )
+  );
 
   const [DeleteTicket, { loading: deleteLoading }] = useMutation(
     DELETE_TICKET,
     {
       context: {
         headers: {
-          Authorization: `Bearer${' '}${user.token}`,
+          Authorization: `Bearer${" "}${user.token}`,
         },
       },
       update() {
-        dispatch(deleteTicket(id))
+        dispatch(deleteTicket(id));
       },
       onError(err) {
-        console.log(err)
+        console.log(err);
       },
       variables: { ticketId: id.toString() },
     }
-  )
+  );
 
   const handleCheckWidthM = () => {
-    let windowWidth = window.innerWidth
+    let windowWidth = window.innerWidth;
     //console.log(windowWidth);
 
     if (windowWidth < 1185) {
-      setIsSideOpen(false)
-      setIsMedium(true)
+      setIsSideOpen(false);
+      setIsMedium(true);
     } else if (windowWidth > 1185) {
-      setIsMedium(false)
-      setIsSideOpen(true)
+      setIsMedium(false);
+      setIsSideOpen(true);
     }
-  }
+  };
+
   const handleCheckWidthS = () => {
-    let windowWidth = window.innerWidth
+    let windowWidth = window.innerWidth;
 
     if (windowWidth < 478) {
-      setIsSmall(true)
+      setIsSmall(true);
     } else if (windowWidth > 478) {
-      setIsSmall(false)
+      setIsSmall(false);
     }
-  }
+  };
 
   const getJobDetail = () => {
     if (id) {
-      const flitedTicket = tickets.find((ticket) => ticket.id === id)
-      setIsFilter(flitedTicket)
+      const flitedTicket = tickets.find((ticket) => ticket.id === id);
+      setIsFilter(flitedTicket);
     } else {
-      setIsFilter(tickets[0])
+      setIsFilter(tickets[0]);
     }
-  }
+  };
 
   useEffect(() => {
     if (tickets.length === 0) {
       if (!getTicketLoading && data) {
         if (user.isAdmin) {
-          dispatch(getTicket(data.getInProcessTickets))
+          dispatch(getTicket(data.getInProcessTickets));
         } else {
-          dispatch(getTicket(data.getSelfTicket))
+          dispatch(getTicket(data.getSelfTicket));
         }
       }
     }
 
     if (tickets && !loading) {
-      getJobDetail()
+      getJobDetail();
     }
-  }, [id, tickets, data])
+  }, [id, tickets, data]);
 
   useEffect(() => {
-    handleCheckWidthM()
-    handleCheckWidthS()
-    window.addEventListener('resize', handleCheckWidthM)
-    window.addEventListener('resize', handleCheckWidthS)
-  }, [])
+    handleCheckWidthM();
+    handleCheckWidthS();
+    window.addEventListener("resize", handleCheckWidthM);
+    window.addEventListener("resize", handleCheckWidthS);
+  }, []);
 
   const handleImgClick = (index) => {
-    document.body.style.overflow = 'hidden'
-    setImgIndex(index)
-    setIsView(true)
-  }
+    document.body.style.overflow = "hidden";
+    setImgIndex(index);
+    setIsView(true);
+  };
 
   const handleCloseScreen = () => {
-    document.body.style.overflowY = 'scroll'
-    setImgIndex(null)
-    setIsView(false)
-  }
+    document.body.style.overflowY = "scroll";
+    setImgIndex(null);
+    setIsView(false);
+  };
 
   const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(' ')
+    const FC = username.split(" ");
 
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
-  }
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
+  };
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30)
+    const title = body.slice(0, 30);
 
-    return title
-  }
+    return title;
+  };
 
   const handleUpdateTicket = () => {
     if (!isFilter.isResolved) {
-      UpdateTicketResolved()
+      UpdateTicketResolved();
     } else if (isFilter.isResolved) {
-      UpdateTicketREOpen()
+      UpdateTicketREOpen();
     }
-  }
+  };
 
   return (
     <Container>
       <InnerContainer>
         <div
           className={`left-bar ${
-            isSideOpen ? 'w-full max-w-[27rem]' : 'w-20'
-          } ${!isSmall && isSideOpen && 'min-w-[27rem]'}`}
+            isSideOpen ? "w-full max-w-[27rem]" : "w-20"
+          } ${!isSmall && isSideOpen && "min-w-[27rem]"}`}
         >
-          {isSideOpen && <JobCard location={'ticket_detail'} />}
+          {isSideOpen && <JobCard location={"ticket_detail"} />}
           {!isSideOpen && (
             <ClosedTicketCard>
               <div
                 onClick={() => setIsCreateTicketOpen(true)}
-                className='name-box '
+                className="name-box "
               >
-                <Add className='text-3xl' />
+                <Add className="text-3xl" />
               </div>
               {tickets &&
                 tickets.map((ticket, index) => {
-                  const { id: ticketId, username } = ticket
+                  const { id: ticketId, username } = ticket;
                   return (
                     <Link
                       to={`/helpdesk-frontend/ticket_detail/${ticketId}`}
                       key={index}
-                      className='name-box '
+                      className="name-box "
                     >
                       {getFirstCharaterOfUsername(username)}
                     </Link>
-                  )
+                  );
                 })}
             </ClosedTicketCard>
           )}
           <ChevronRight
             onClick={() => setIsSideOpen(!isSideOpen)}
-            className={`more-icon ${isSideOpen ? '' : 'rotate-0'}`}
+            className={`more-icon ${isSideOpen ? "" : "rotate-0"}`}
           />
         </div>
         {!loading && isFilter && (
           <RightContainer
-            className={`${isSmall && isSideOpen ? 'hidden' : 'inline-flex'}`}
+            className={`${isSmall && isSideOpen ? "hidden" : "inline-flex"}`}
           >
-            <div className='right-top'>
-              <Link to='/helpdesk-frontend/home' className='back-btn'>
-                <ChevronLeft className='back-icon' />
+            <div className="right-top">
+              <Link to="/helpdesk-frontend/home" className="back-btn">
+                <ChevronLeft className="back-icon" />
                 To Home
               </Link>
-              <div className='right-btn-container'>
+              <div className="right-btn-container">
                 <DeleteForever
                   onClick={() => DeleteTicket()}
-                  className='delete-btn'
+                  className="delete-btn"
                 />
                 <div
                   onClick={() => handleUpdateTicket()}
                   className={`resolve-btn ${
                     isFilter.isResolved
-                      ? 'bg-red-600 hover:bg-red-500'
-                      : 'bg-green-600 hover:bg-green-500'
+                      ? "bg-red-600 hover:bg-red-500"
+                      : "bg-green-600 hover:bg-green-500"
                   }`}
                 >
-                  {isFilter.isResolved ? 'Re-Open' : 'Resolve'}
+                  {isFilter.isResolved ? "Re-Open" : "Resolve"}
                 </div>
               </div>
             </div>
-            <div className='right-form'>
-              <div className='scoll-container'>
-                <div className='title-container'>
-                  <div className='title-info'>
-                    <h1>{getTitleFromBody(isFilter.body)}</h1>
-                    <p>{isFilter.typeTicket}</p>
-                  </div>
-                  <div className='title-postby'>
-                    <h2>Posted 4 days ago</h2>
-                    <p>by {isFilter.username}</p>
-                  </div>
-                </div>
-                <div className='job-highlight hidden md:inline-flex'>
-                  <div className='list-items'>
-                    <h3>Ticket Level</h3>
-                    <p>{isFilter.isUrgent ? 'Urgent' : 'Not Urgent'}</p>
-                  </div>
-                  <div className='list-items'>
-                    <h3>Location</h3>
-                    <p>{isFilter.typeTicket}</p>
-                  </div>
-                  <div className='list-items'>
-                    <h3>Comments</h3>
-                    <p>{isFilter.comments.length}</p>
-                  </div>
-                </div>
-                <div className='job-desc'>
-                  <h2>Description</h2>
-                  <p>{isFilter.body}</p>
-                </div>
-                {isFilter.images.length > 0 && (
-                  <div className='job-img'>
-                    <h2>Image Attached</h2>
-                    <div className='img-container'>
-                      {isFilter.images.map((x, index) => (
-                        <img
-                          onClick={() => handleImgClick(index)}
-                          key={index}
-                          src={x}
-                          alt='attachment'
-                        />
-                      ))}
+            {!loading ? (
+              <div className="right-form">
+                <div className="scoll-container">
+                  <div className="title-container">
+                    <div className="title-info">
+                      <h1>{getTitleFromBody(isFilter.body)}</h1>
+                      <p>{isFilter.typeTicket}</p>
+                    </div>
+                    <div className="title-postby">
+                      <h2>Posted 4 days ago</h2>
+                      <p>by {isFilter.username}</p>
                     </div>
                   </div>
-                )}
-
-                {isFilter.comments.length > 0 && (
-                  <div className='ticket-comments'>
-                    <h2>Comments</h2>
-                    <div className='inner-container'>
-                      {isFilter.comments
-                        .slice(0)
-                        .reverse()
-                        .map((x) => (
-                          <div className='comment-card' key={x.id}>
-                            <div className='card-userinfo'>
-                              <div className='username-logo'>
-                                {getFirstCharaterOfUsername(x.username)}
-                              </div>
-
-                              <div className='user-detail'>
-                                <h1>{x.username}</h1>
-                                <p>
-                                  Commented On{' '}
-                                  {moment(x.createdAt).format('Do MMM YYYY')}
-                                </p>
-                              </div>
-                            </div>
-                            <p className='comment-body'>{x.body}</p>
-                          </div>
+                  <div className="job-highlight hidden md:inline-flex">
+                    <div className="list-items">
+                      <h3>Ticket Level</h3>
+                      <p>{isFilter.isUrgent ? "Urgent" : "Not Urgent"}</p>
+                    </div>
+                    <div className="list-items">
+                      <h3>Location</h3>
+                      <p>{isFilter.typeTicket}</p>
+                    </div>
+                    <div className="list-items">
+                      <h3>Comments</h3>
+                      <p>{isFilter.comments.length}</p>
+                    </div>
+                  </div>
+                  <div className="job-desc">
+                    <h2>Description</h2>
+                    <p>{isFilter.body}</p>
+                  </div>
+                  {isFilter.images.length > 0 && (
+                    <div className="job-img">
+                      <h2>Image Attached</h2>
+                      <div className="img-container">
+                        {isFilter.images.map((x, index) => (
+                          <img
+                            onClick={() => handleImgClick(index)}
+                            key={index}
+                            src={x}
+                            alt="attachment"
+                          />
                         ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {!isFilter.isResolved && <CommentBox />}
+                  )}
+
+                  {isFilter.comments.length > 0 && (
+                    <div className="ticket-comments">
+                      <h2>Comments</h2>
+                      <div className="inner-container">
+                        {isFilter.comments
+                          .slice(0)
+                          .reverse()
+                          .map((x) => (
+                            <div className="comment-card" key={x.id}>
+                              <div className="card-userinfo">
+                                <div className="username-logo">
+                                  {getFirstCharaterOfUsername(x.username)}
+                                </div>
+
+                                <div className="user-detail">
+                                  <h1>{x.username}</h1>
+                                  <p>
+                                    Commented On{" "}
+                                    {moment(x.createdAt).format("Do MMM YYYY")}
+                                  </p>
+                                </div>
+                              </div>
+                              <p className="comment-body">{x.body}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                  {!isFilter.isResolved && <CommentBox />}
+                </div>
               </div>
-            </div>
+            ) : (
+              <TicketDetailPH />
+            )}
           </RightContainer>
         )}
       </InnerContainer>
@@ -354,8 +360,8 @@ const TicketDetail = () => {
         <ImgScreen index={imgIndex} toggle={handleCloseScreen} />
       )}
     </Container>
-  )
-}
+  );
+};
 
 const GET_INPROCESS_TICKETS = gql`
   {
@@ -376,7 +382,7 @@ const GET_INPROCESS_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const GET_COMPLETED_TICKETS = gql`
   {
@@ -397,7 +403,7 @@ const GET_COMPLETED_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const GET_SELF_TICKETS = gql`
   {
@@ -418,7 +424,7 @@ const GET_SELF_TICKETS = gql`
       createdAt
     }
   }
-`
+`;
 
 const UPDATE_TICKET_RESOLVED = gql`
   mutation updateResolved($ticketId: ID!) {
@@ -427,7 +433,7 @@ const UPDATE_TICKET_RESOLVED = gql`
       isResolved
     }
   }
-`
+`;
 
 const UPDATE_TICKET_RE_OPEN = gql`
   mutation updateReOpenTicket($ticketId: ID!) {
@@ -436,19 +442,17 @@ const UPDATE_TICKET_RE_OPEN = gql`
       isResolved
     }
   }
-`
+`;
 
 const DELETE_TICKET = gql`
   mutation deleteTicket($ticketId: ID!) {
     deleteTicket(ticketId: $ticketId)
   }
-`
+`;
 
 const Container = styled.section`
   ${tw`
-    w-screen
-    h-screen
-    min-h-screen
+    w-full
     pt-28
     px-4
     lg:px-0
@@ -459,7 +463,7 @@ const Container = styled.section`
     bg-gray-900
     overflow-x-hidden
   `}
-`
+`;
 
 const InnerContainer = styled.div`
   ${tw`
@@ -507,7 +511,7 @@ const InnerContainer = styled.div`
       `}
     }
   }
-`
+`;
 
 const ClosedTicketCard = styled.div`
   ${tw`
@@ -540,7 +544,7 @@ const ClosedTicketCard = styled.div`
         ease-in-out
     `}
   }
-`
+`;
 
 const RightContainer = styled.div`
   ${tw`
@@ -969,6 +973,6 @@ const RightContainer = styled.div`
       `}
     }
   }
-`
+`;
 
-export default TicketDetail
+export default TicketDetail;

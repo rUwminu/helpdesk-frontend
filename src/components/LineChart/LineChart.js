@@ -1,4 +1,4 @@
-import React, { PureComponent, useState, useEffect, useMemo } from 'react'
+import React, { PureComponent, useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -7,104 +7,102 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import { gql } from '@apollo/client'
-import { useQuery } from '@apollo/client'
-
-import { productData } from '../../assets/dumpData/Data'
+} from "recharts";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 const LineChartComponent = ({ grid }) => {
   const Months = useMemo(
     () => [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ],
     []
-  )
+  );
 
-  const [isSmall, setIsSmall] = useState(false)
-  const [ticketStat, setTicketStat] = useState([])
+  const [isSmall, setIsSmall] = useState(false);
+  const [ticketStat, setTicketStat] = useState([]);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
   const handleCheckWidthS = () => {
-    let windowWidth = window.innerWidth
+    let windowWidth = window.innerWidth;
 
     if (windowWidth < 478) {
-      setIsSmall(true)
+      setIsSmall(true);
     } else if (windowWidth > 478) {
-      setIsSmall(false)
+      setIsSmall(false);
     }
-  }
+  };
 
   const { data } = useQuery(GET_TICKET_STATS, {
     context: {
       headers: {
-        Authorization: `Bearer${' '}${user.token}`,
+        Authorization: `Bearer${" "}${user.token}`,
       },
     },
-  })
+  });
 
   const formatData = () => {
-    const dataArray = [...data.getTicketStats]
+    const dataArray = [...data.getTicketStats];
 
     const sortedList = dataArray.sort(function (a, b) {
-      return a._id - b._id
-    })
+      return a._id - b._id;
+    });
 
     sortedList.map((item) =>
       setTicketStat((prev) => [
         ...prev,
-        { name: Months[item._id - 1], 'Total Ticket': item.total },
+        { name: Months[item._id - 1], "Total Ticket": item.total },
       ])
-    )
-  }
+    );
+  };
 
   useEffect(() => {
-    handleCheckWidthS()
-    window.addEventListener('resize', handleCheckWidthS)
-  }, [])
+    handleCheckWidthS();
+    window.addEventListener("resize", handleCheckWidthS);
+  }, []);
 
   useEffect(() => {
     if (data) {
-      formatData()
+      formatData();
     }
-  }, [data])
+  }, [data]);
 
-  console.log(ticketStat)
+  //console.log(ticketStat);
 
   return (
     <>
       {ticketStat && (
         <Container>
-          <h3 className='title'>Monthly Ticket Chart</h3>
-          <ResponsiveContainer width={'100%'} height={200}>
+          <h3 className="title">Monthly Ticket Chart</h3>
+          <ResponsiveContainer width={"100%"} height={200}>
             <LineChart data={ticketStat}>
-              <XAxis dataKey='name' stroke='#C5C5C5' />
-              <Line type='monotone' dataKey={'Total Ticket'} stroke='#D1D100' />
+              <XAxis dataKey="name" stroke="#C5C5C5" />
+              <Line type="monotone" dataKey={"Total Ticket"} stroke="#DC143C" />
               <Tooltip />
-              {grid && <CartesianGrid stroke='#e0dfdf' strokeDasharray='5 5' />}
+              {grid && <CartesianGrid stroke="#e0dfdf" strokeDasharray="5 5" />}
             </LineChart>
           </ResponsiveContainer>
         </Container>
       )}
     </>
-  )
-}
+  );
+};
 
 const GET_TICKET_STATS = gql`
   {
@@ -113,7 +111,7 @@ const GET_TICKET_STATS = gql`
       total
     }
   }
-`
+`;
 
 const Container = styled.div`
   ${tw`
@@ -133,10 +131,10 @@ const Container = styled.div`
         lg:text-xl
     `}
   }
-`
+`;
 
 const TContainer = styled.div`
   ${tw``}
-`
+`;
 
-export default LineChartComponent
+export default LineChartComponent;

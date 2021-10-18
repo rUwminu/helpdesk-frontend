@@ -8,3 +8,7 @@ export { default as NewTicket } from "./NewTicket/NewTicket";
 export { default as CommentBox } from "./CommentBox/CommentBox";
 export { default as PieChart } from "./PieChart/PieChart";
 export { default as LineChartComponent } from "./LineChart/LineChart";
+
+// Place Holder
+export { default as TicketCardPH } from "./ContentPlaceHolder/TicketCardPlaceHolder/TicketCardPH";
+export { default as TicketDetailPH } from "./ContentPlaceHolder/TicketDetailPlaceHolder/TicketDetailPH";
