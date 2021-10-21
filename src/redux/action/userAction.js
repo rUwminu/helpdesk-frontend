@@ -2,6 +2,8 @@ import {
   USER_DETAILS_FAIL,
   USER_DETAILS_REQUEST,
   USER_DETAILS_SUCCESS,
+  USER_INFO,
+  USER_LIST_ALL,
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
@@ -15,8 +17,6 @@ import {
 } from "../constant/userConstant";
 
 import { CLEAR_ALL_STATE } from "../constant/ticketConstant";
-
-
 
 export const signin = (data) => (dispatch) => {
   dispatch({
@@ -48,6 +48,14 @@ export const signout = () => (dispatch) => {
   dispatch({
     type: CLEAR_ALL_STATE,
   });
+};
+
+export const getAllUser = (data) => (dispatch) => {
+  dispatch({ type: USER_LIST_ALL, payload: data });
+};
+
+export const getSingleUser = (data) => (dispatch) => {
+  dispatch({ type: USER_INFO, payload: data });
 };
 
 export const register = (data) => (dispatch) => {};

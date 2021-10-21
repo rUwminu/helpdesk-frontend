@@ -1,27 +1,34 @@
-import './App.css'
+import "./App.css";
 
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
-} from 'react-router-dom'
-import { useSelector } from 'react-redux'
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { Navbar } from './components/index'
-import { Home, Login, TicketDetail, TicketPanel } from './pages/index'
+import { Navbar } from "./components/index";
+import {
+  Home,
+  Login,
+  TicketDetail,
+  TicketPanel,
+  UserPanel,
+  UserProfile,
+} from "./pages/index";
 
 function App() {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:4000/graphql',
-  })
+    uri: "http://localhost:4000/graphql",
+  });
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
-  const baseUrl = '/helpdesk-frontend'
+  const baseUrl = "/helpdesk-frontend";
 
   return (
     <ApolloProvider client={client}>
@@ -45,6 +52,12 @@ function App() {
               <Route path={`${baseUrl}/ticket_panel`}>
                 <TicketPanel />
               </Route>
+              <Route path={`${baseUrl}/user_panel`}>
+                <UserPanel />
+              </Route>
+              <Route path={`${baseUrl}/user/:id`}>
+                <UserProfile />
+              </Route>
             </>
           ) : (
             <Redirect to={`${baseUrl}/login`} />
@@ -52,7 +65,7 @@ function App() {
         </Switch>
       </Router>
     </ApolloProvider>
-  )
+  );
 }
 
-export default App
+export default App;
