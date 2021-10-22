@@ -4,6 +4,7 @@ import {
   USER_DETAILS_SUCCESS,
   USER_INFO,
   USER_LIST_ALL,
+  USER_DELETE,
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
@@ -64,6 +65,11 @@ export const userListReducer = (state = { allUser: [] }, action) => {
       return { ...state, allUser: action.payload };
     case USER_INFO:
       return { ...state, userInfo: action.payload };
+    case USER_DELETE:
+      return {
+        ...state,
+        allUser: state.allUser.filter((x) => x.id !== action.payload),
+      };
     default:
       return state;
   }

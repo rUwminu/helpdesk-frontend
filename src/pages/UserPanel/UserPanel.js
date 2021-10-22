@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { DataGrid } from "@material-ui/data-grid";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 
 // Icons
 import { DeleteOutline } from "@mui/icons-material";
@@ -14,9 +14,11 @@ import { DeleteOutline } from "@mui/icons-material";
 import Avatar from "../../assets/image/avatar.jpg";
 
 // Redux Action
-import { getAllUser } from "../../redux/action/userAction";
+import { getAllUser, deleteUser } from "../../redux/action/userAction";
 
 const UserPanel = () => {
+  const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const userList = useSelector((state) => state.userList);
@@ -25,13 +27,44 @@ const UserPanel = () => {
   const userSignIn = useSelector((state) => state.userSignIn);
   const { user } = userSignIn;
 
-  const { data } = useQuery(GET_ALL_USERS, {
+  const [getUserList, { data }] = useLazyQuery(GET_ALL_USERS, {
     context: {
       headers: {
         Authorization: `Bearer${" "}${user.token}`,
       },
     },
   });
+
+  const [DeleteUserAccount] = useMutation(DELETE_USER_ACCOUNT);
+
+  const handleDeleteUser = (id) => {
+    DeleteUserAccount({
+      context: {
+        headers: {
+          Authorization: `Bearer${" "}${user.token}`,
+        },
+      },
+      update() {
+        dispatch(deleteUser(id));
+      },
+      onError(err) {
+        console.log(err);
+      },
+      variables: { userId: id },
+    });
+  };
+
+  useEffect(() => {
+    getUserList();
+  }, []);
+
+  // Refresh pages everytime this page is view
+  useEffect(() => {
+    history.listen((location) => {
+      getUserList();
+      console.log(`You changed the page to: ${location.pathname}`);
+    });
+  }, [history]);
 
   useEffect(() => {
     if (data) {
@@ -71,14 +104,17 @@ const UserPanel = () => {
               <button>Edit</button>
             </Link>
 
-            <DeleteOutline className="delete-icons" />
+            <DeleteOutline
+              onClick={() => handleDeleteUser(params.row.id)}
+              className="delete-icons"
+            />
           </EditButton>
         );
       },
     },
   ];
 
-  //console.log(allUser);
+  //console.log(data);
 
   return (
     <SectionContainer>
@@ -86,7 +122,7 @@ const UserPanel = () => {
         <h1>User List</h1>
         {allUser.length > 0 && (
           <DataGrid
-            rows={allUser}
+            rows={allUser && allUser}
             columns={columns}
             disableSelectionOnClick
             pageSize={8}
@@ -110,6 +146,12 @@ const GET_ALL_USERS = gql`
       username
       email
     }
+  }
+`;
+
+const DELETE_USER_ACCOUNT = gql`
+  mutation deleteUser($userId: ID!) {
+    deleteUser(userId: $userId)
   }
 `;
 
@@ -186,7 +228,14 @@ const Container = styled.div`
         min-h-[24rem] 
         text-gray-200 
         bg-gray-800
+        border-gray-400
     `}
+
+    .checkbox {
+      ${tw`
+        border-gray-400
+      `}
+    }
   }
 `;
 

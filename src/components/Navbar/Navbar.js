@@ -69,6 +69,12 @@ const Navbar = () => {
     history.push("/login");
   };
 
+  const handleRirect = async (location) => {
+    history.push(`${location}`);
+
+    window.location.reload();
+  };
+
   return (
     <Container
       className={`${
@@ -78,18 +84,24 @@ const Navbar = () => {
       {user && !loading && (
         <NavInner>
           <NavLeft>
-            <Link to="/helpdesk-frontend/home">
+            <div onClick={() => handleRirect("/helpdesk-frontend/home")}>
               <img src={Logo} alt="logo" />
-            </Link>
+            </div>
           </NavLeft>
           {!isMobile && (
             <NavMid>
-              <Link to="/helpdesk-frontend/user_panel" className="nav-link">
+              <div
+                onClick={() => handleRirect("/helpdesk-frontend/user_panel")}
+                className="nav-link"
+              >
                 Manage User
-              </Link>
-              <Link to="/helpdesk-frontend/ticket_panel" className="nav-link">
+              </div>
+              <div
+                onClick={() => handleRirect("/helpdesk-frontend/ticket_panel")}
+                className="nav-link"
+              >
                 Watch Ticket Stats
-              </Link>
+              </div>
               <div className="nav-link">Sponsor us</div>
             </NavMid>
           )}

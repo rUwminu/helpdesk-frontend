@@ -1,185 +1,211 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
 import {
   filterTicketsUrgent,
   filterTicketsByDeparment,
   toggleTicketIsResolved,
-} from '../../redux/action/ticketAction'
+} from "../../redux/action/ticketAction";
 
 const Sidebar = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [isUrgent, setIsUrgent] = useState(false)
-  const [isComplete, setIsComplete] = useState(false)
+  const [isUrgent, setIsUrgent] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user, loading } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user, loading } = userSignIn;
 
-  const ticketList = useSelector((state) => state.ticketList)
-  const { filterType } = ticketList
+  const ticketList = useSelector((state) => state.ticketList);
+  const { filterType } = ticketList;
 
   const handleToggleIsUrgent = () => {
-    setIsUrgent(!isUrgent)
+    setIsUrgent(!isUrgent);
 
     if (isUrgent) {
-      dispatch(filterTicketsUrgent(false))
+      dispatch(filterTicketsUrgent(false));
     } else {
-      dispatch(filterTicketsUrgent(true))
+      dispatch(filterTicketsUrgent(true));
     }
-  }
+  };
 
   return (
     <Container>
       {user && user.isAdmin && (
-        <div className='items-list'>
+        <div className="items-list">
           <h2>Type Ticket</h2>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='Manager'
-              checked={filterType.find((x) => x === 'Manager') && 'checked'}
+              type="checkbox"
+              value="Manager"
+              checked={
+                filterType &&
+                filterType.find((x) => x === "Manager") &&
+                "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Manager
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='EDP'
-              checked={filterType.find((x) => x === 'EDP') && 'checked'}
+              type="checkbox"
+              value="EDP"
+              checked={
+                filterType && filterType.find((x) => x === "EDP") && "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             EDP
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='CS'
-              checked={filterType.find((x) => x === 'CS') && 'checked'}
+              type="checkbox"
+              value="CS"
+              checked={
+                filterType && filterType.find((x) => x === "CS") && "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             CS
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='QA'
-              checked={filterType.find((x) => x === 'QA') && 'checked'}
+              type="checkbox"
+              value="QA"
+              checked={
+                filterType && filterType.find((x) => x === "QA") && "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             QA
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='Account'
-              checked={filterType.find((x) => x === 'Account') && 'checked'}
+              type="checkbox"
+              value="Account"
+              checked={
+                filterType &&
+                filterType.find((x) => x === "Account") &&
+                "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Account
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='Production'
-              checked={filterType.find((x) => x === 'Production') && 'checked'}
+              type="checkbox"
+              value="Production"
+              checked={
+                filterType &&
+                filterType.find((x) => x === "Production") &&
+                "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Production
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='Printing'
-              checked={filterType.find((x) => x === 'Printing') && 'checked'}
+              type="checkbox"
+              value="Printing"
+              checked={
+                filterType &&
+                filterType.find((x) => x === "Printing") &&
+                "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Printing
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={(e) =>
                 dispatch(filterTicketsByDeparment(e.target.value))
               }
-              type='checkbox'
-              value='Cutting'
-              checked={filterType.find((x) => x === 'Cutting') && 'checked'}
+              type="checkbox"
+              value="Cutting"
+              checked={
+                filterType &&
+                filterType.find((x) => x === "Cutting") &&
+                "checked"
+              }
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Cutting
           </label>
         </div>
       )}
-      <div className='items-list'>
+      <div className="items-list">
         <h2>Emergency</h2>
-        <label className='cb-container'>
+        <label className="cb-container">
           <input
             onChange={() => handleToggleIsUrgent()}
-            type='checkbox'
-            value='verify'
-            checked={isUrgent ? 'checked' : ''}
+            type="checkbox"
+            value="verify"
+            checked={isUrgent ? "checked" : ""}
           />
-          <span className='check'></span>
+          <span className="check"></span>
           Urgent
         </label>
       </div>
       {user && user.isAdmin && (
-        <div className='items-list'>
+        <div className="items-list">
           <h2>Sort Ticket</h2>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={() => {
-                setIsComplete(false)
-                dispatch(toggleTicketIsResolved(false))
+                setIsComplete(false);
+                dispatch(toggleTicketIsResolved(false));
               }}
-              type='checkbox'
+              type="checkbox"
               checked={!isComplete ? true : false}
-              value='entry'
+              value="entry"
             />
-            <span className='check'></span>
+            <span className="check"></span>
             In Process
           </label>
-          <label className='cb-container'>
+          <label className="cb-container">
             <input
               onClick={() => {
-                setIsComplete(true)
-                dispatch(toggleTicketIsResolved(true))
+                setIsComplete(true);
+                dispatch(toggleTicketIsResolved(true));
               }}
-              type='checkbox'
+              type="checkbox"
               checked={isComplete ? true : false}
-              value='inter'
+              value="inter"
             />
-            <span className='check'></span>
+            <span className="check"></span>
             Closed Ticket
           </label>
         </div>
       )}
     </Container>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   ${tw`
@@ -244,7 +270,7 @@ const Container = styled.div`
       `}
 
         :before {
-          content: '';
+          content: "";
           box-shadow: 0 -13.5px 0 rgba(249, 250, 251, 1);
 
           ${tw`
@@ -260,7 +286,7 @@ const Container = styled.div`
         }
 
         :after {
-          content: '';
+          content: "";
           box-shadow: 13.5px 0 0 rgba(249, 250, 251, 1);
 
           ${tw`
@@ -296,6 +322,6 @@ const Container = styled.div`
       }
     }
   }
-`
+`;
 
-export default Sidebar
+export default Sidebar;

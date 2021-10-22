@@ -1,4 +1,5 @@
 import {
+  USER_DELETE,
   USER_DETAILS_FAIL,
   USER_DETAILS_REQUEST,
   USER_DETAILS_SUCCESS,
@@ -56,6 +57,10 @@ export const getAllUser = (data) => (dispatch) => {
 
 export const getSingleUser = (data) => (dispatch) => {
   dispatch({ type: USER_INFO, payload: data });
+};
+
+export const deleteUser = (userId) => (dispatch) => {
+  dispatch({ type: USER_DELETE, payload: userId });
 };
 
 export const register = (data) => (dispatch) => {};
