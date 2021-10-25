@@ -1,6 +1,7 @@
 import {
-  CREATE_COMMENT_FAIL,
   CREATE_COMMENT_SUCCESS,
+  CREATE_COMMENT_FAIL,
+  CREATE_COMMENT_PROCESS,
 } from "../constant/commentConstant";
 import {
   TICKET_REQUEST,
@@ -41,7 +42,13 @@ export const filterTicketsByDeparment = (type) => (dispatch) => {
 };
 
 export const createNewComment = (data) => (dispatch) => {
-  dispatch({ type: CREATE_COMMENT_SUCCESS, payload: data });
+  dispatch({ type: CREATE_COMMENT_PROCESS });
+
+  if (data === "error") {
+    dispatch({ type: CREATE_COMMENT_FAIL });
+  } else {
+    dispatch({ type: CREATE_COMMENT_SUCCESS, payload: data });
+  }
 };
 
 export const toggleTicketIsResolved = (boo) => (dispatch) => {

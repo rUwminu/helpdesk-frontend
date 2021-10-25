@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useParams, Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import moment from "moment";
+import { useSelector } from "react-redux";
 
 // Icons
-import { CheckCircle } from "@mui/icons-material";
+//import { CheckCircle } from "@mui/icons-material";
 
 // Component
 import { ImgScreen, TicketDetailPH } from "../index";

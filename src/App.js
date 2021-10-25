@@ -17,6 +17,7 @@ import {
   TicketPanel,
   UserPanel,
   UserProfile,
+  BlogPage,
 } from "./pages/index";
 
 function App() {
@@ -57,6 +58,9 @@ function App() {
               </Route>
               <Route path={`${baseUrl}/user/:id`}>
                 <UserProfile />
+              </Route>
+              <Route path={`${baseUrl}/Blog`}>
+                <BlogPage />
               </Route>
             </>
           ) : (

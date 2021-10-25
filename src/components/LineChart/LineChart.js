@@ -1,16 +1,15 @@
-import React, { PureComponent, useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
   XAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import tw from "twin.macro";
 import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
 
@@ -33,21 +32,10 @@ const LineChartComponent = ({ grid }) => {
     []
   );
 
-  const [isSmall, setIsSmall] = useState(false);
   const [ticketStat, setTicketStat] = useState([]);
 
   const userSignIn = useSelector((state) => state.userSignIn);
   const { user } = userSignIn;
-
-  const handleCheckWidthS = () => {
-    let windowWidth = window.innerWidth;
-
-    if (windowWidth < 478) {
-      setIsSmall(true);
-    } else if (windowWidth > 478) {
-      setIsSmall(false);
-    }
-  };
 
   const { data } = useQuery(GET_TICKET_STATS, {
     context: {
@@ -71,11 +59,6 @@ const LineChartComponent = ({ grid }) => {
       ])
     );
   };
-
-  useEffect(() => {
-    handleCheckWidthS();
-    window.addEventListener("resize", handleCheckWidthS);
-  }, []);
 
   useEffect(() => {
     if (data) {
@@ -131,10 +114,6 @@ const Container = styled.div`
         lg:text-xl
     `}
   }
-`;
-
-const TContainer = styled.div`
-  ${tw``}
 `;
 
 export default LineChartComponent;

@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import { gql } from '@apollo/client'
-import { useMutation } from '@apollo/client'
-import styled from 'styled-components'
-import tw from 'twin.macro'
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import styled from "styled-components";
+import tw from "twin.macro";
 
-import { useDispatch, useSelector } from 'react-redux'
-import { signin, register } from '../../redux/action/userAction'
+import { useDispatch } from "react-redux";
+import { signin, register } from "../../redux/action/userAction";
 
 // SVG
-import InfoSvg from '../../assets/Svg/intouch.svg'
+import InfoSvg from "../../assets/Svg/intouch.svg";
 
 const LOGIN_USER = gql`
   mutation login($email: String!, $password: String!) {
@@ -22,39 +22,39 @@ const LOGIN_USER = gql`
       token
     }
   }
-`
+`;
 
 const Login = () => {
-  const history = useHistory()
-  const dispatch = useDispatch()
-  const [isError, setIsError] = useState()
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const [isError, setIsError] = useState();
   const InputState = {
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-  }
-  const [inputValue, setInputValue] = useState(InputState)
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  };
+  const [inputValue, setInputValue] = useState(InputState);
 
-  const [loginUser, { loading }] = useMutation(LOGIN_USER, {
+  const [loginUser] = useMutation(LOGIN_USER, {
     update(_, { data: { login: userData } }) {
-      history.push('/')
-      dispatch(signin(userData))
+      history.push("/");
+      dispatch(signin(userData));
     },
     onError(err) {
-      console.log(err.graphQLErrors[0].extensions.exception.errors)
+      console.log(err.graphQLErrors[0].extensions.exception.errors);
     },
     variables: inputValue,
-  })
+  });
 
   const handleChange = (e) => {
-    setInputValue({ ...inputValue, [e.target.name]: e.target.value })
-  }
+    setInputValue({ ...inputValue, [e.target.name]: e.target.value });
+  };
 
   const handlerClick = (e) => {
-    e.preventDefault()
-    loginUser()
-  }
+    e.preventDefault();
+    loginUser();
+  };
 
   return (
     <Container>
@@ -63,21 +63,21 @@ const Login = () => {
           <h1>
             Login To <span>HelpDesk</span>
           </h1>
-          <div className='input-items'>
+          <div className="input-items">
             <input
               onChange={handleChange}
-              type='text'
-              name='email'
+              type="text"
+              name="email"
               value={inputValue.email}
               required
             />
             <span>Your Email</span>
           </div>
-          <div className='input-items'>
+          <div className="input-items">
             <input
               onChange={handleChange}
-              type='password'
-              name='password'
+              type="password"
+              name="password"
               value={inputValue.password}
               required
             />
@@ -86,12 +86,12 @@ const Login = () => {
           <button onClick={(e) => handlerClick(e)}>Login</button>
         </LeftContainer>
         <RightContainer>
-          <img src={InfoSvg} alt='' className='svg' />
+          <img src={InfoSvg} alt="" className="svg" />
         </RightContainer>
       </InnerContainer>
     </Container>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   ${tw`
@@ -101,7 +101,7 @@ const Container = styled.div`
     w-screen
     h-screen
   `}
-`
+`;
 
 const InnerContainer = styled.div`
   ${tw`
@@ -116,7 +116,7 @@ const InnerContainer = styled.div`
     items-center
     justify-center
   `}
-`
+`;
 
 const LeftContainer = styled.div`
   ${tw`
@@ -213,7 +213,7 @@ const LeftContainer = styled.div`
         `}
     }
   }
-`
+`;
 
 const RightContainer = styled.div`
   ${tw`
@@ -230,6 +230,6 @@ const RightContainer = styled.div`
       max-w-xl
     `}
   }
-`
+`;
 
-export default Login
+export default Login;

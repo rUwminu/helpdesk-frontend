@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
-import { useSelector, useDispatch } from "react-redux";
-import { getTicket } from "../../redux/action/ticketAction";
-import {
-  Sidebar,
-  JobCard,
-  JobInfo,
-  SidebarSmall,
-} from "../../components/index";
+import { Sidebar, JobCard, JobInfo } from "../../components/index";
 
 // Icon
-import { ExpandMore } from "@mui/icons-material";
+// import { ExpandMore } from "@mui/icons-material";
 
 const Home = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [isMedium, setIsMedium] = useState(false);
   const [isSmall, setIsIsSmall] = useState(false);
 
@@ -95,46 +86,6 @@ const Home = () => {
   );
 };
 
-const GET_INPROCESS_TICKETS = gql`
-  {
-    getInProcessTickets {
-      id
-      typeTicket
-      username
-      body
-      images
-      isUrgent
-      isResolved
-      comments {
-        id
-        username
-        body
-      }
-      createdAt
-    }
-  }
-`;
-
-const GET_SELF_TICKETS = gql`
-  {
-    getSelfTicket {
-      id
-      typeTicket
-      username
-      body
-      images
-      isUrgent
-      isResolved
-      comments {
-        id
-        username
-        body
-      }
-      createdAt
-    }
-  }
-`;
-
 const Container = styled.section`
   ${tw`
     pt-28
@@ -211,24 +162,6 @@ const InnerContainer = styled.div`
       overflow-y-hidden
     `}
   }
-`;
-
-const AbsoluteFilterList = styled.div`
-  ${tw`
-    absolute
-    top-[7rem]
-    right-4
-    h-full
-    max-h-80
-    px-4  
-    bg-gray-800
-    rounded-md
-    transition-all
-    duration-200
-    ease-linear
-    z-10
-  `}
-  box-shadow: -1px -3px 207px -29px rgba(0,0,0,1);
 `;
 
 export default Home;

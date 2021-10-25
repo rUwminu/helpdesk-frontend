@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signout } from "../../redux/action/userAction";
 
+// Utils
+import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
+
 // Svg
 import Logo from "../../assets/image/Logo.svg";
 import Avatar from "../../assets/image/avatar.jpg";
@@ -69,11 +72,12 @@ const Navbar = () => {
     history.push("/login");
   };
 
-  const handleRirect = async (location) => {
-    history.push(`${location}`);
-
-    window.location.reload();
-  };
+  function refreshPage() {
+    setTimeout(() => {
+      window.location.reload(false);
+    }, 500);
+    console.log("page to reload");
+  }
 
   return (
     <Container
@@ -84,25 +88,29 @@ const Navbar = () => {
       {user && !loading && (
         <NavInner>
           <NavLeft>
-            <div onClick={() => handleRirect("/helpdesk-frontend/home")}>
+            <Link to={`/helpdesk-frontend/home`} onClick={() => refreshPage()}>
               <img src={Logo} alt="logo" />
-            </div>
+            </Link>
           </NavLeft>
           {!isMobile && (
             <NavMid>
-              <div
-                onClick={() => handleRirect("/helpdesk-frontend/user_panel")}
+              <Link
+                to={`/helpdesk-frontend/user_panel`}
+                onClick={() => refreshPage()}
                 className="nav-link"
               >
                 Manage User
-              </div>
-              <div
-                onClick={() => handleRirect("/helpdesk-frontend/ticket_panel")}
+              </Link>
+              <Link
+                to={`/helpdesk-frontend/ticket_panel`}
+                onClick={() => refreshPage()}
                 className="nav-link"
               >
                 Watch Ticket Stats
-              </div>
-              <div className="nav-link">Sponsor us</div>
+              </Link>
+              <Link to={`/helpdesk-frontend/blog`} className="nav-link">
+                What New?
+              </Link>
             </NavMid>
           )}
           <NavRight>
@@ -118,7 +126,9 @@ const Navbar = () => {
             )}
 
             <div className="user-info">
-              <img src={Avatar} alt="user" />
+              <div className="user-logo">
+                {getFirstCharaterOfUsername(user.username)}
+              </div>
               <h2>{user.username}</h2>
               <ExpandMore
                 onClick={() => setIsDropOption(!isDropOption)}
@@ -147,9 +157,23 @@ const Navbar = () => {
                 isActive ? "translate-x-0 shadow-md" : "translate-x-full "
               }`}
             >
-              <div className="nav-link">Find a Job</div>
-              <div className="nav-link">Submit a Job</div>
-              <div className="nav-link">Sponsor us</div>
+              <Link
+                to={`/helpdesk-frontend/user_panel`}
+                onClick={() => refreshPage()}
+                className="nav-link"
+              >
+                Manage User
+              </Link>
+              <Link
+                to={`/helpdesk-frontend/ticket_panel`}
+                onClick={() => refreshPage()}
+                className="nav-link"
+              >
+                Watch Ticket Stats
+              </Link>
+              <Link to={`/helpdesk-frontend/blog`} className="nav-link">
+                What New?
+              </Link>
             </AbsoluteNav>
           )}
         </NavInner>
@@ -235,11 +259,21 @@ const NavRight = styled.div`
     ease-in-out
   `}
 
-  img {
+  .user-logo {
     ${tw`
-        w-10
-        h-10
-        mr-4
+        w-8
+        h-8
+        md:w-10
+        md:h-10
+        mr-2
+        md:mr-4
+        flex
+        items-center
+        justify-center
+        bg-blue-600
+        text-gray-200
+        font-semibold
+        border-2
         rounded-full
         cursor-pointer
       `}
@@ -258,7 +292,7 @@ const NavRight = styled.div`
   h2 {
     ${tw`
       mr-2
-      text-lg
+      md:text-lg
       text-gray-100
     `}
   }

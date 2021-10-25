@@ -4,3 +4,4 @@ export { default as TicketDetail } from "./TicketDetail/TicketDetail";
 export { default as TicketPanel } from "./TicketPanel/TicketPanel";
 export { default as UserPanel } from "./UserPanel/UserPanel";
 export { default as UserProfile } from "./Userprofile/UserProfile";
+export { default as BlogPage } from "./Blog/Blog";

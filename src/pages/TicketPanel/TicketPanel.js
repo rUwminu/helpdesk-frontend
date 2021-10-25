@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import { gql } from '@apollo/client'
-import { useLazyQuery } from '@apollo/client'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 
 // Redux action
-import { getAllTicketType } from '../../redux/action/ticketAction'
+import { getAllTicketType } from "../../redux/action/ticketAction";
 
 // components
-import { PieChart, LineChartComponent } from '../../components/index'
+import { PieChart, LineChartComponent } from "../../components/index";
 
 // mui import
-import PropTypes from 'prop-types'
-import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+import PropTypes from "prop-types";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 function CircularProgressWithLabel(props) {
   return (
-    <Box className='relative w-full h-full'>
+    <Box className="relative w-full h-full">
       <CircularProgress
-        className='w-full h-full'
-        variant='determinate'
+        className="w-full h-full"
+        variant="determinate"
         {...props}
       />
       <Box
@@ -32,167 +31,165 @@ function CircularProgressWithLabel(props) {
           left: 0,
           bottom: 0,
           right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          position: "absolute",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Typography
-          variant='caption'
-          component='div'
-          className='text-2xl text-gray-200'
+          variant="caption"
+          component="div"
+          className="text-2xl text-gray-200"
         >
           {`${Math.round(props.value)}%`}
         </Typography>
       </Box>
     </Box>
-  )
+  );
 }
 
 CircularProgressWithLabel.propTypes = {
   value: PropTypes.number.isRequired,
-}
+};
 
 const TicketPanel = () => {
-  const dispatch = useDispatch()
-  const [reducedType, setReducedType] = useState([])
+  const dispatch = useDispatch();
+  const [reducedType, setReducedType] = useState([]);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
-  const ticketList = useSelector((state) => state.ticketList)
-  const { allTicketsType, loading } = ticketList
+  const ticketList = useSelector((state) => state.ticketList);
+  const { allTicketsType } = ticketList;
 
   const [getTicketOnLoad, { data }] = useLazyQuery(GET_ALL_TICKETS, {
     context: {
       headers: {
-        Authorization: `Bearer${' '}${user.token}`,
+        Authorization: `Bearer${" "}${user.token}`,
       },
     },
-  })
+  });
 
   const calAllTicketCompletePercentage = () => {
-    const total = allTicketsType.length
-    const completion = allTicketsType.filter((x) => x.isResolved === true)
+    const total = allTicketsType.length;
+    const completion = allTicketsType.filter((x) => x.isResolved === true);
 
     if (total.length !== 0) {
-      const getpercentage = Math.round((100 / total) * completion.length)
+      const getpercentage = Math.round((100 / total) * completion.length);
 
-      return getpercentage
+      return getpercentage;
     } else {
-      return 0
+      return 0;
     }
-  }
+  };
 
   const calAllTicketIsUrgentPercentage = () => {
-    const total = allTicketsType.filter((x) => x.isUrgent === true)
+    const total = allTicketsType.filter((x) => x.isUrgent === true);
     const completion = allTicketsType.filter(
       (x) => x.isUrgent === true && x.isResolved === true
-    )
+    );
 
     if (total.length !== 0) {
-      const getpercentage = Math.round((100 / total.length) * completion.length)
+      const getpercentage = Math.round(
+        (100 / total.length) * completion.length
+      );
 
-      return getpercentage
+      return getpercentage;
     } else {
-      return 0
+      return 0;
     }
-  }
+  };
 
   const getTypeValue = () => {
     const countType = allTicketsType.reduce((total, item) => {
-      const { typeTicket } = item
+      const { typeTicket } = item;
 
       if (!typeTicket) {
-        return total
+        return total;
       }
 
       if (!total[typeTicket]) {
-        total[typeTicket] = { name: typeTicket, value: 1 }
+        total[typeTicket] = { name: typeTicket, value: 1 };
       } else {
         total[typeTicket] = {
           ...total[typeTicket],
           value: total[typeTicket].value + 1,
-        }
+        };
       }
 
-      return total
-    }, {})
+      return total;
+    }, {});
 
     //console.log(Object.values(countType))
 
-    setReducedType(Object.values(countType))
+    setReducedType(Object.values(countType));
 
-    return countType
-  }
+    return countType;
+  };
 
   useEffect(() => {
     if (allTicketsType.length === 0) {
-      getTicketOnLoad()
+      getTicketOnLoad();
 
       if (data) {
-        dispatch(getAllTicketType(data.getTickets))
+        dispatch(getAllTicketType(data.getTickets));
       }
     }
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     if (allTicketsType.length > 0) {
-      getTypeValue()
+      getTypeValue();
     }
-  }, [allTicketsType])
+  }, [allTicketsType]);
 
   return (
     <Container>
-      <div className='inner-container'>
-        <h1 className='title'>Dashboard</h1>
-        <div className='top-container'>
-          <div className='left-pie'>
+      <div className="inner-container">
+        <h1 className="title">Dashboard</h1>
+        <div className="top-container">
+          <div className="left-pie">
             <CardContainer>
               <h1>Ticket Completion</h1>
-              <div className='info-box'>
+              <div className="info-box">
                 <CircularProgressWithLabel
-                  className='w-full h-full'
+                  className="w-full h-full"
                   value={calAllTicketCompletePercentage()}
                 />
               </div>
             </CardContainer>
             <CardContainer>
               <h1>Ticket Urgent</h1>
-              <div className='info-box'>
+              <div className="info-box">
                 <CircularProgressWithLabel
-                  className='w-full h-full'
+                  className="w-full h-full"
                   value={calAllTicketIsUrgentPercentage()}
                 />
               </div>
             </CardContainer>
             <CardContainer>
               <h1>Ticket Completion</h1>
-              <div className='info-box'>
+              <div className="info-box">
                 <CircularProgressWithLabel
-                  className='w-full h-full'
+                  className="w-full h-full"
                   value={calAllTicketCompletePercentage()}
                 />
               </div>
             </CardContainer>
           </div>
-          <div className='right-pie'>
+          <div className="right-pie">
             <h1>Ticket Requested By Deparment</h1>
             {reducedType && <PieChart data={reducedType} />}
           </div>
         </div>
-        <div className='mid-container'>
+        <div className="mid-container">
           <LineChartComponent grid />
-        </div>
-        <div className='bot-container'>
-          <RoundChartContainer></RoundChartContainer>
-          <TicketTypeListContainer></TicketTypeListContainer>
         </div>
       </div>
     </Container>
-  )
-}
+  );
+};
 
 const GET_ALL_TICKETS = gql`
   {
@@ -203,16 +200,7 @@ const GET_ALL_TICKETS = gql`
       isResolved
     }
   }
-`
-
-const GET_TICKET_STATS = gql`
-  {
-    getTicketStats {
-      _id
-      total
-    }
-  }
-`
+`;
 
 const Container = styled.div`
   ${tw`
@@ -313,7 +301,7 @@ const Container = styled.div`
         justify-between
     `}
   }
-`
+`;
 
 const CardContainer = styled.div`
   ${tw`
@@ -351,18 +339,6 @@ const CardContainer = styled.div`
         mb-2
     `}
   }
-`
+`;
 
-const ChartContainer = styled.div`
-  ${tw``}
-`
-
-const RoundChartContainer = styled.div`
-  ${tw``}
-`
-
-const TicketTypeListContainer = styled.div`
-  ${tw``}
-`
-
-export default TicketPanel
+export default TicketPanel;

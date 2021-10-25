@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { gql } from "@apollo/client";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import moment from "moment";
 
 import { getTicket } from "../../redux/action/ticketAction";
@@ -17,6 +17,9 @@ import {
   Add,
   ExpandMore,
 } from "@mui/icons-material";
+
+// Utils
+import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
 
 import { NewTicket, TicketCardPH, SidebarSmall } from "../index";
 
@@ -33,13 +36,7 @@ const JobCard = ({ location, isMedium }) => {
   const { user } = userSignIn;
 
   const ticketList = useSelector((state) => state.ticketList);
-  const {
-    tickets,
-    isUrgent,
-    filterType,
-    resolved,
-    loading: ticketLoading,
-  } = ticketList;
+  const { tickets, isUrgent, filterType, resolved } = ticketList;
 
   const checkTicketResolveType = () => {
     if (!resolved) {
@@ -122,12 +119,6 @@ const JobCard = ({ location, isMedium }) => {
     getTicketOnLoad();
   }, [resolved]);
 
-  const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
-
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
-  };
-
   const getTitleFromBody = (body) => {
     const title = body.slice(0, 30);
 
@@ -161,8 +152,8 @@ const JobCard = ({ location, isMedium }) => {
                 ticket;
 
               return (
-                <Link to={`/helpdesk-frontend/${location}/${id}`}>
-                  <Card key={id}>
+                <Link to={`/helpdesk-frontend/${location}/${id}`} key={id}>
+                  <Card>
                     <div className="card-top">
                       <div className="logo" alt="logo">
                         {getFirstCharaterOfUsername(username)}

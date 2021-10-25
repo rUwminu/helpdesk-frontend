@@ -22,6 +22,9 @@ import {
   TicketDetailPH,
 } from "../../components/index";
 
+// Utils
+import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
+
 // Icons
 import {
   ChevronRight,
@@ -35,7 +38,6 @@ const TicketDetail = () => {
   const { id } = useParams();
 
   const [isSmall, setIsSmall] = useState(false);
-  const [isMedium, setIsMedium] = useState(false);
   const [isFilter, setIsFilter] = useState(null);
   const [isSideOpen, setIsSideOpen] = useState(true);
   const [imgIndex, setImgIndex] = useState(null);
@@ -103,23 +105,20 @@ const TicketDetail = () => {
     }
   );
 
-  const [DeleteTicket, { loading: deleteLoading }] = useMutation(
-    DELETE_TICKET,
-    {
-      context: {
-        headers: {
-          Authorization: `Bearer${" "}${user.token}`,
-        },
+  const [DeleteTicket] = useMutation(DELETE_TICKET, {
+    context: {
+      headers: {
+        Authorization: `Bearer${" "}${user.token}`,
       },
-      update() {
-        dispatch(deleteTicket(id));
-      },
-      onError(err) {
-        console.log(err);
-      },
-      variables: { ticketId: id.toString() },
-    }
-  );
+    },
+    update() {
+      dispatch(deleteTicket(id));
+    },
+    onError(err) {
+      console.log(err);
+    },
+    variables: { ticketId: id.toString() },
+  });
 
   const handleCheckWidthM = () => {
     let windowWidth = window.innerWidth;
@@ -127,9 +126,7 @@ const TicketDetail = () => {
 
     if (windowWidth < 1185) {
       setIsSideOpen(false);
-      setIsMedium(true);
     } else if (windowWidth > 1185) {
-      setIsMedium(false);
       setIsSideOpen(true);
     }
   };
@@ -186,12 +183,6 @@ const TicketDetail = () => {
     document.body.style.overflowY = "scroll";
     setImgIndex(null);
     setIsView(false);
-  };
-
-  const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
-
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
   };
 
   const getTitleFromBody = (body) => {
@@ -280,7 +271,10 @@ const TicketDetail = () => {
                       <p>{isFilter.typeTicket}</p>
                     </div>
                     <div className="title-postby">
-                      <h2>Posted 4 days ago</h2>
+                      <h2>
+                        Posted on{" "}
+                        {moment(isFilter.createdAt).format("Do MMM YYYY")}
+                      </h2>
                       <p>by {isFilter.username}</p>
                     </div>
                   </div>
@@ -453,6 +447,7 @@ const DELETE_TICKET = gql`
 const Container = styled.section`
   ${tw`
     w-full
+    min-h-[100vh]
     pt-28
     px-4
     lg:px-0
@@ -680,6 +675,8 @@ const RightContainer = styled.div`
 
       .title-info {
         ${tw`
+        mb-4
+        md:mb-0
         flex
         flex-col
         items-start

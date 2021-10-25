@@ -123,12 +123,6 @@ const UserProfile = () => {
     await UpdateProfileDetail();
   };
 
-  // const handleRirect = async (location) => {
-  //   await history.push(`${location}`);
-
-  //   window.location.reload();
-  // };
-
   return (
     <SectionContainer>
       <Container>

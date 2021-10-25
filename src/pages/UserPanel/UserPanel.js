@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { DataGrid } from "@material-ui/data-grid";
-import { Link, useLocation, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { gql } from "@apollo/client";
 import { useMutation, useLazyQuery } from "@apollo/client";
@@ -13,12 +13,15 @@ import { DeleteOutline } from "@mui/icons-material";
 // Svg & Images
 import Avatar from "../../assets/image/avatar.jpg";
 
+// Utils
+import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
+
 // Redux Action
 import { getAllUser, deleteUser } from "../../redux/action/userAction";
 
 const UserPanel = () => {
-  const history = useHistory();
-  const location = useLocation();
+  // const history = useHistory();
+  // const location = useLocation();
   const dispatch = useDispatch();
 
   const userList = useSelector((state) => state.userList);
@@ -56,15 +59,15 @@ const UserPanel = () => {
 
   useEffect(() => {
     getUserList();
-  }, []);
+  }, [allUser]);
 
   // Refresh pages everytime this page is view
-  useEffect(() => {
-    history.listen((location) => {
-      getUserList();
-      console.log(`You changed the page to: ${location.pathname}`);
-    });
-  }, [history]);
+  // useEffect(() => {
+  //   history.listen((location) => {
+  //     getUserList();
+  //     console.log(`You changed the page to: ${location.pathname}`);
+  //   });
+  // }, [history]);
 
   useEffect(() => {
     if (data) {
@@ -81,7 +84,9 @@ const UserPanel = () => {
       renderCell: (params) => {
         return (
           <UserProfile>
-            <img src={Avatar} alt="" />
+            <div className="user-logo">
+              {getFirstCharaterOfUsername(params.row.username)}
+            </div>
             {params.row.username}
           </UserProfile>
         );
@@ -246,13 +251,16 @@ const UserProfile = styled.div`
     justify-start
   `}
 
-  img {
+  .user-logo {
     ${tw`
         mr-2
         w-10
         h-10
+        flex
+        items-center
+        justify-center
+        bg-blue-600
         rounded-full
-        object-cover
     `}
   }
 `;

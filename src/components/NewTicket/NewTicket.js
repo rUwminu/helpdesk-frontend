@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useDropzone } from "react-dropzone";
@@ -49,7 +49,7 @@ const NewTicket = ({ state, toggle }) => {
 
   const thumbs = files.map((file) => (
     <div key={file.name} className="img-container">
-      <img src={file.preview} />
+      <img src={file.preview} alt="uploaded" />
       <div>{file.size} Bytes</div>
     </div>
   ));
