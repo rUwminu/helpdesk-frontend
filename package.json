@@ -1,6 +1,6 @@
 {
   "homepage": "https://rUwminu.github.io/helpdesk-frontend/home",
-  "name": "react-playground",
+  "name": "helpdesk",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
