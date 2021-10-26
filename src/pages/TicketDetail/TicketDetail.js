@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client";
 import moment from "moment";
@@ -31,11 +31,13 @@ import {
   ChevronLeft,
   Add,
   DeleteForever,
+  Print,
 } from "@mui/icons-material";
 
 const TicketDetail = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const history = useHistory();
 
   const [isSmall, setIsSmall] = useState(false);
   const [isFilter, setIsFilter] = useState(null);
@@ -199,6 +201,11 @@ const TicketDetail = () => {
     }
   };
 
+  const handlePdfViews = () => {
+    window.open(`/helpdesk-frontend/pdf_view/${id}`, "_blank");
+    //history.push(`/helpdesk-frontend/pdf-view/${id}`);
+  };
+
   return (
     <Container>
       <InnerContainer>
@@ -248,8 +255,14 @@ const TicketDetail = () => {
               <div className="right-btn-container">
                 <DeleteForever
                   onClick={() => DeleteTicket()}
-                  className="delete-btn"
+                  className="delete-btn btn"
                 />
+
+                <Print
+                  onClick={() => handlePdfViews()}
+                  className="print-btn btn"
+                />
+
                 <div
                   onClick={() => handleUpdateTicket()}
                   className={`resolve-btn ${
@@ -592,9 +605,6 @@ const RightContainer = styled.div`
         `}
 
         .back-icon {
-          ${tw`
-             
-          `}
           animation: backAnimate 2.5s ease infinite;
         }
       }
@@ -607,19 +617,30 @@ const RightContainer = styled.div`
         justify-center
       `}
 
-      .delete-btn {
+      .btn {
         ${tw`
           h-8
           w-8
           p-1
           mr-2
-          text-red-500
           transition
           duration-200
           ease-in-out
           rounded-md
           cursor-pointer
           hover:bg-gray-700
+        `}
+      }
+
+      .delete-btn {
+        ${tw`
+          text-red-500        
+        `}
+      }
+
+      .print-btn {
+        ${tw`
+          text-blue-500
         `}
       }
 
@@ -650,9 +671,20 @@ const RightContainer = styled.div`
         p-6
         bg-gray-800
         rounded-md
-        overflow-y-scroll
-        scrollbar-hide
     `}
+
+    overflow-y: hidden;
+
+    :hover,
+    :active,
+    :focus {
+      overflow-y: auto;
+      overflow-y: overlay;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: none;
+    }
 
     .scoll-container {
       ${tw`
@@ -795,13 +827,30 @@ const RightContainer = styled.div`
       .img-container {
         ${tw`
         flex
-        flex-wrap
-        items-center
-        justify-start
-        w-full
+        flex-nowrap
       `}
 
+        ::-webkit-scrollbar {
+          height: 6px;
+        }
+
+        overflow-x: hidden;
+        overflow-y: hidden;
+
+        :hover,
+        :active,
+        :focus {
+          overflow-x: scroll;
+          overflow-x: overlay;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: none;
+        }
+
         img {
+          flex: 0 0 auto;
+
           ${tw`
           mr-4
           w-32
@@ -876,6 +925,7 @@ const RightContainer = styled.div`
 
           .username-logo {
             ${tw`
+              w-full
               flex
               items-center
               justify-center
@@ -883,6 +933,7 @@ const RightContainer = styled.div`
               h-8
               md:w-12
               md:h-12
+              min-w-[2rem]
               text-base
               md:text-xl
               font-semibold

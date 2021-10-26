@@ -259,7 +259,9 @@ const UserProfile = styled.div`
         flex
         items-center
         justify-center
+        border-2
         bg-blue-600
+        border-gray-200
         rounded-full
     `}
   }

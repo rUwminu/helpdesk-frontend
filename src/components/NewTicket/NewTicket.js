@@ -154,7 +154,7 @@ const MainContainer = styled.div`
     justify-center
     px-4
     bg-gray-800
-    bg-opacity-50
+    bg-opacity-30
     transition-all
     duration-500
     ease-in-out

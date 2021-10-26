@@ -18,6 +18,7 @@ import {
   UserPanel,
   UserProfile,
   BlogPage,
+  PdfViewer,
 } from "./pages/index";
 
 function App() {
@@ -50,18 +51,24 @@ function App() {
               <Route path={`${baseUrl}/ticket_detail/:id`}>
                 <TicketDetail />
               </Route>
-              <Route path={`${baseUrl}/ticket_panel`}>
-                <TicketPanel />
-              </Route>
-              <Route path={`${baseUrl}/user_panel`}>
-                <UserPanel />
-              </Route>
               <Route path={`${baseUrl}/user/:id`}>
                 <UserProfile />
               </Route>
               <Route path={`${baseUrl}/Blog`}>
                 <BlogPage />
               </Route>
+              <Route path={`${baseUrl}/pdf_view/:id`}>
+                <PdfViewer />
+              </Route>
+
+              <>
+                <Route path={`${baseUrl}/ticket_panel`}>
+                  <TicketPanel />
+                </Route>
+                <Route path={`${baseUrl}/user_panel`}>
+                  <UserPanel />
+                </Route>
+              </>
             </>
           ) : (
             <Redirect to={`${baseUrl}/login`} />

@@ -97,14 +97,18 @@ const Navbar = () => {
               <Link
                 to={`/helpdesk-frontend/user_panel`}
                 onClick={() => refreshPage()}
-                className="nav-link"
+                className={`nav-link ${
+                  user.isAdmin ? "inline-flex" : "hidden"
+                }`}
               >
                 Manage User
               </Link>
               <Link
                 to={`/helpdesk-frontend/ticket_panel`}
                 onClick={() => refreshPage()}
-                className="nav-link"
+                className={`nav-link ${
+                  user.isAdmin ? "inline-flex" : "hidden"
+                }`}
               >
                 Watch Ticket Stats
               </Link>
