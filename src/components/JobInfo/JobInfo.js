@@ -3,6 +3,7 @@ import tw from "twin.macro";
 import styled from "styled-components";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import moment from "moment";
 
 // Icons
 //import { CheckCircle } from "@mui/icons-material";
@@ -17,22 +18,26 @@ const JobInfo = () => {
   const [isView, setIsView] = useState(false);
 
   const ticketList = useSelector((state) => state.ticketList);
-  const { tickets, loading } = ticketList;
+  const { tickets, loading, resolved } = ticketList;
 
   const getJobDetail = () => {
     if (id) {
       const flitedTicket = tickets.find((ticket) => ticket.id === id);
-      setIsFilter(flitedTicket);
-    } else {
-      setIsFilter(tickets[0]);
+
+      if (!flitedTicket) {
+        setIsFilter(tickets[0]);
+      } else {
+        setIsFilter(flitedTicket);
+      }
     }
   };
 
   useEffect(() => {
+    console.log(resolved);
     if (tickets) {
       getJobDetail();
     }
-  }, [id, tickets]);
+  }, [id, tickets, resolved]);
 
   const getTitleFromBody = (body) => {
     const title = body.slice(0, 30);
@@ -62,7 +67,7 @@ const JobInfo = () => {
               <p>{isFilter.typeTicket}</p>
             </div>
             <div className="title-postby">
-              <h2>Posted 4 days ago</h2>
+              <h2>Posted On {moment(isFilter.createdAt).format("Do MMM")}</h2>
               <p>by {isFilter.username}</p>
             </div>
           </div>

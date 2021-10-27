@@ -146,9 +146,12 @@ const TicketDetail = () => {
   const getJobDetail = () => {
     if (id) {
       const flitedTicket = tickets.find((ticket) => ticket.id === id);
-      setIsFilter(flitedTicket);
-    } else {
-      setIsFilter(tickets[0]);
+
+      if (!flitedTicket) {
+        setIsFilter(tickets[0]);
+      } else {
+        setIsFilter(flitedTicket);
+      }
     }
   };
 

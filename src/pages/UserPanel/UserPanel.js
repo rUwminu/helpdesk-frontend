@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { DataGrid } from "@material-ui/data-grid";
@@ -16,6 +16,9 @@ import Avatar from "../../assets/image/avatar.jpg";
 // Utils
 import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
 
+// Components
+import { NewUser } from "../../components/index";
+
 // Redux Action
 import { getAllUser, deleteUser } from "../../redux/action/userAction";
 
@@ -23,6 +26,7 @@ const UserPanel = () => {
   // const history = useHistory();
   // const location = useLocation();
   const dispatch = useDispatch();
+  const [isSideActive, setIsSideActive] = useState(false);
 
   const userList = useSelector((state) => state.userList);
   const { allUser } = userList;
@@ -136,10 +140,26 @@ const UserPanel = () => {
             className="grid-style"
           />
         )}
-        <Link to="/helpdesk-frontend/new_user" className="add-btn">
+        <div onClick={() => setIsSideActive(true)} className="add-btn">
           Create
-        </Link>
+        </div>
       </Container>
+      <AbsoluteSideContainer
+        className={isSideActive ? "translate-x-0" : "translate-x-full"}
+      >
+        {isSideActive && (
+          <NewUser
+            isSideActive={isSideActive}
+            setIsSideActive={setIsSideActive}
+          />
+        )}
+
+        <div
+          className={`blur-bg ${
+            isSideActive ? "translate-x-0" : "translate-x-full"
+          }`}
+        />
+      </AbsoluteSideContainer>
     </SectionContainer>
   );
 };
@@ -162,11 +182,11 @@ const DELETE_USER_ACCOUNT = gql`
 
 const SectionContainer = styled.div`
   ${tw`
+    relative
     flex
     items-center
     justify-center
-    w-full
-    h-full
+    w-screen
     min-h-[100vh]
     bg-gray-900
   `}
@@ -308,6 +328,48 @@ const EditButton = styled.div`
 
         hover:bg-gray-700
         bg-opacity-50
+    `}
+  }
+`;
+
+const AbsoluteSideContainer = styled.div`
+  ${tw`
+    absolute
+    top-0
+    right-0
+    flex
+    items-center
+    justify-center
+    h-full
+    w-full
+    sm:max-w-md
+    bg-gray-800
+    shadow-md
+    z-30
+
+    transition
+    duration-500
+    ease-in-out
+  `}
+
+  .blur-bg {
+    ${tw`
+      absolute
+      top-0
+      right-0
+      w-screen
+      h-full
+      min-h-[100vh]
+      bg-gradient-to-l
+      from-gray-700
+      via-gray-700
+      to-transparent
+      opacity-50
+      z-10
+ 
+      transition-all
+      duration-200
+      ease-in-out
     `}
   }
 `;

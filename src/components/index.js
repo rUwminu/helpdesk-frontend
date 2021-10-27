@@ -5,6 +5,7 @@ export { default as JobCard } from "./JobCard/JobCard";
 export { default as JobInfo } from "./JobInfo/JobInfo";
 export { default as ImgScreen } from "./ImgScreen/ImgScreen";
 export { default as NewTicket } from "./NewTicket/NewTicket";
+export { default as NewUser } from "./UserCreate/UserCreate";
 export { default as CommentBox } from "./CommentBox/CommentBox";
 export { default as PieChart } from "./PieChart/PieChart";
 export { default as LineChartComponent } from "./LineChart/LineChart";

@@ -148,11 +148,13 @@ const MainContainer = styled.div`
     left-0
     right-0
     w-screen
-    h-screen
+    h-full
+    min-h-[100vh]
     flex
     items-center
     justify-center
     px-4
+    py-10
     bg-gray-800
     bg-opacity-30
     transition-all
@@ -170,11 +172,25 @@ const Card = styled.div`
         justify-between
         p-4
         w-full
+        h-[25rem]
         md:max-w-lg
         bg-gray-700
         rounded-md
         z-30
     `}
+
+  overflow-y: hidden;
+
+  :hover,
+  :active,
+  :focus {
+    overflow-y: auto;
+    overflow-y: overlay;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: none;
+  }
 
   .top-card {
     ${tw`

@@ -95,6 +95,13 @@ const Navbar = () => {
           {!isMobile && (
             <NavMid>
               <Link
+                to={`/helpdesk-frontend/home`}
+                onClick={() => refreshPage()}
+                className={`nav-link`}
+              >
+                Home
+              </Link>
+              <Link
                 to={`/helpdesk-frontend/user_panel`}
                 onClick={() => refreshPage()}
                 className={`nav-link ${

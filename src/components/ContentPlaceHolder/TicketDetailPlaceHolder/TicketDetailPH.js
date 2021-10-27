@@ -40,8 +40,6 @@ const Container = styled.div`
     flex-col
     items-start
     justify-start
-    p-10
-    mt-12
     w-full
     bg-gray-800
     rounded-md
