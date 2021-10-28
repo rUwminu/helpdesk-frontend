@@ -1,69 +1,69 @@
-import React, { useEffect, useState } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { DataGrid } from "@material-ui/data-grid";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { gql } from "@apollo/client";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import React, { useEffect, useState } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { DataGrid } from '@material-ui/data-grid'
+import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { gql } from '@apollo/client'
+import { useMutation, useLazyQuery } from '@apollo/client'
 
 // Icons
-import { DeleteOutline } from "@mui/icons-material";
+import { DeleteOutline } from '@mui/icons-material'
 
 // Svg & Images
-import Avatar from "../../assets/image/avatar.jpg";
+import Avatar from '../../assets/image/avatar.jpg'
 
 // Utils
-import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
+import getFirstCharaterOfUsername from '../../utils/getFirstCharOfUsername'
 
 // Components
-import { NewUser } from "../../components/index";
+import { NewUser } from '../../components/index'
 
 // Redux Action
-import { getAllUser, deleteUser } from "../../redux/action/userAction";
+import { getAllUser, deleteUser } from '../../redux/action/userAction'
 
 const UserPanel = () => {
   // const history = useHistory();
   // const location = useLocation();
-  const dispatch = useDispatch();
-  const [isSideActive, setIsSideActive] = useState(false);
+  const dispatch = useDispatch()
+  const [isSideActive, setIsSideActive] = useState(false)
 
-  const userList = useSelector((state) => state.userList);
-  const { allUser } = userList;
+  const userList = useSelector((state) => state.userList)
+  const { allUser } = userList
 
-  const userSignIn = useSelector((state) => state.userSignIn);
-  const { user } = userSignIn;
+  const userSignIn = useSelector((state) => state.userSignIn)
+  const { user } = userSignIn
 
   const [getUserList, { data }] = useLazyQuery(GET_ALL_USERS, {
     context: {
       headers: {
-        Authorization: `Bearer${" "}${user.token}`,
+        Authorization: `Bearer${' '}${user.token}`,
       },
     },
-  });
+  })
 
-  const [DeleteUserAccount] = useMutation(DELETE_USER_ACCOUNT);
+  const [DeleteUserAccount] = useMutation(DELETE_USER_ACCOUNT)
 
   const handleDeleteUser = (id) => {
     DeleteUserAccount({
       context: {
         headers: {
-          Authorization: `Bearer${" "}${user.token}`,
+          Authorization: `Bearer${' '}${user.token}`,
         },
       },
       update() {
-        dispatch(deleteUser(id));
+        dispatch(deleteUser(id))
       },
       onError(err) {
-        console.log(err);
+        console.log(err)
       },
       variables: { userId: id },
-    });
-  };
+    })
+  }
 
   useEffect(() => {
-    getUserList();
-  }, [allUser]);
+    getUserList()
+  }, [allUser])
 
   // Refresh pages everytime this page is view
   // useEffect(() => {
@@ -75,36 +75,41 @@ const UserPanel = () => {
 
   useEffect(() => {
     if (data) {
-      dispatch(getAllUser(data.getUsers));
+      dispatch(getAllUser(data.getUsers))
     }
-  }, [data]);
+  }, [data])
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: 'id', headerName: 'ID', width: 100 },
     {
-      field: "username",
-      headerName: "Full name",
+      field: 'username',
+      headerName: 'Full name',
       width: 200,
       renderCell: (params) => {
         return (
           <UserProfile>
-            <div className="user-logo">
+            <div className='user-logo'>
               {getFirstCharaterOfUsername(params.row.username)}
             </div>
             {params.row.username}
           </UserProfile>
-        );
+        )
       },
     },
     {
-      field: "email",
-      headerName: "Email",
+      field: 'email',
+      headerName: 'Email',
       sortable: false,
       width: 180,
     },
     {
-      field: "action",
-      headerName: "Action",
+      field: 'department',
+      headerName: 'Position',
+      width: 130,
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
       width: 150,
       renderCell: (params) => {
         return (
@@ -115,13 +120,13 @@ const UserPanel = () => {
 
             <DeleteOutline
               onClick={() => handleDeleteUser(params.row.id)}
-              className="delete-icons"
+              className='delete-icons'
             />
           </EditButton>
-        );
+        )
       },
     },
-  ];
+  ]
 
   //console.log(data);
 
@@ -137,15 +142,15 @@ const UserPanel = () => {
             pageSize={8}
             checkboxSelection
             getRowId={(r) => r.id}
-            className="grid-style"
+            className='grid-style'
           />
         )}
-        <div onClick={() => setIsSideActive(true)} className="add-btn">
+        <div onClick={() => setIsSideActive(true)} className='add-btn'>
           Create
         </div>
       </Container>
       <AbsoluteSideContainer
-        className={isSideActive ? "translate-x-0" : "translate-x-full"}
+        className={isSideActive ? 'translate-x-0' : 'translate-x-full'}
       >
         {isSideActive && (
           <NewUser
@@ -155,14 +160,15 @@ const UserPanel = () => {
         )}
 
         <div
+          onClick={() => setIsSideActive(false)}
           className={`blur-bg ${
-            isSideActive ? "translate-x-0" : "translate-x-full"
+            isSideActive ? 'translate-x-0' : 'translate-x-full'
           }`}
         />
       </AbsoluteSideContainer>
     </SectionContainer>
-  );
-};
+  )
+}
 
 const GET_ALL_USERS = gql`
   {
@@ -170,15 +176,16 @@ const GET_ALL_USERS = gql`
       id
       username
       email
+      department
     }
   }
-`;
+`
 
 const DELETE_USER_ACCOUNT = gql`
   mutation deleteUser($userId: ID!) {
     deleteUser(userId: $userId)
   }
-`;
+`
 
 const SectionContainer = styled.div`
   ${tw`
@@ -190,7 +197,7 @@ const SectionContainer = styled.div`
     min-h-[100vh]
     bg-gray-900
   `}
-`;
+`
 
 const Container = styled.div`
   ${tw`
@@ -262,7 +269,7 @@ const Container = styled.div`
       `}
     }
   }
-`;
+`
 
 const UserProfile = styled.div`
   ${tw`
@@ -285,7 +292,7 @@ const UserProfile = styled.div`
         rounded-full
     `}
   }
-`;
+`
 
 const EditButton = styled.div`
   ${tw`
@@ -330,7 +337,7 @@ const EditButton = styled.div`
         bg-opacity-50
     `}
   }
-`;
+`
 
 const AbsoluteSideContainer = styled.div`
   ${tw`
@@ -372,6 +379,6 @@ const AbsoluteSideContainer = styled.div`
       ease-in-out
     `}
   }
-`;
+`
 
-export default UserPanel;
+export default UserPanel

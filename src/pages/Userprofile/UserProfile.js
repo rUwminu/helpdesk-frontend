@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { useSelector, useDispatch } from "react-redux";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { useParams, Link, useHistory } from "react-router-dom";
-import moment from "moment";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { useSelector, useDispatch } from 'react-redux'
+import { gql, useQuery, useMutation } from '@apollo/client'
+import { useParams, Link, useHistory } from 'react-router-dom'
+import moment from 'moment'
 
 // Redux
-import { getSingleUser, deleteUser } from "../../redux/action/userAction";
+import { getSingleUser, deleteUser } from '../../redux/action/userAction'
 
 //Icon class
 import {
@@ -16,204 +16,199 @@ import {
   ChevronLeft,
   CheckCircle,
   CheckCircleOutline,
-} from "@mui/icons-material";
+} from '@mui/icons-material'
 
 const UserProfile = () => {
-  const history = useHistory();
-  const { id } = useParams();
-  const dispatch = useDispatch();
+  const history = useHistory()
+  const { id } = useParams()
+  const dispatch = useDispatch()
 
-  const [inputValue, setInputValue] = useState({});
-  const [ticketList, setTicketList] = useState([]);
+  const [inputValue, setInputValue] = useState({})
+  const [ticketList, setTicketList] = useState([])
 
-  const userSignIn = useSelector((state) => state.userSignIn);
-  const { user } = userSignIn;
+  const userSignIn = useSelector((state) => state.userSignIn)
+  const { user } = userSignIn
 
-  const userProfile = useSelector((state) => state.userList);
-  const { userInfo } = userProfile;
+  const userProfile = useSelector((state) => state.userList)
+  const { userInfo } = userProfile
 
   const { data } = useQuery(GET_USER_INFO, {
     variables: { userId: id.toString() },
-  });
+  })
 
   const { data: userTicket } = useQuery(GET_USER_TICKETS, {
     context: {
       headers: {
-        Authorization: `Bearer${" "}${user.token}`,
+        Authorization: `Bearer${' '}${user.token}`,
       },
     },
     variables: { userId: id.toString() },
-  });
+  })
 
   const [UpdateProfileDetail, { loading: UpdatedLoading }] = useMutation(
     UPDATE_USER_PROFILE,
     {
       context: {
         headers: {
-          Authorization: `Bearer${" "}${user.token}`,
+          Authorization: `Bearer${' '}${user.token}`,
         },
       },
       update(_, { data: { updateProfile: UpdatedData } }) {
-        dispatch(getSingleUser(UpdatedData));
+        dispatch(getSingleUser(UpdatedData))
       },
       onError(err) {
-        console.log(err);
+        console.log(err)
       },
       variables: { ...inputValue, userId: id.toString() },
     }
-  );
+  )
 
   const [DeleteUserAccount] = useMutation(DELETE_USER_ACCOUNT, {
     context: {
       headers: {
-        Authorization: `Bearer${" "}${user.token}`,
+        Authorization: `Bearer${' '}${user.token}`,
       },
     },
     update() {
       if (user.isAdmin) {
         if (user.id === id) {
-          history.push("/helpdesk-frontend/login");
+          history.push('/helpdesk-frontend/login')
         } else {
-          const asyncFunction = async () => {
-            await dispatch(deleteUser(id));
-            await history.push("/helpdesk-frontend/user_panel");
-
-            window.location.reload();
-          };
-          asyncFunction();
+          dispatch(deleteUser(id))
+          history.push('/helpdesk-frontend/user_panel')
         }
       } else {
-        history.push("/helpdesk-frontend/login");
+        history.push('/helpdesk-frontend/login')
       }
     },
     onError(err) {
-      console.log(err);
+      console.log(err)
     },
     variables: { userId: id.toString() },
-  });
+  })
 
   useEffect(() => {
     if (data) {
-      dispatch(getSingleUser(data.getUser));
+      dispatch(getSingleUser(data.getUser))
     }
-  }, [data]);
+  }, [data])
 
   useEffect(() => {
     //console.log(userTicket.getTargetTicket);
     if (userTicket) {
-      setTicketList(userTicket.getTargetTicket);
+      setTicketList(userTicket.getTargetTicket)
     }
-  }, [userTicket]);
+  }, [userTicket])
 
   //console.log(data);
 
   const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
+    const FC = username.split(' ')
 
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
-  };
+    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
+  }
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30);
+    const title = body.slice(0, 30)
 
-    return title;
-  };
+    return title
+  }
 
   const handleUpdateProflie = async () => {
-    await UpdateProfileDetail();
-  };
+    await UpdateProfileDetail()
+  }
 
   return (
     <SectionContainer>
       <Container>
-        <div className="title-container">
-          <h1 className="title">User Profile</h1>
+        <div className='title-container'>
+          <h1 className='title'>User Profile</h1>
           <Link
             to={
               user.isAdmin
-                ? "/helpdesk-frontend/user_panel"
-                : "/helpdesk-frontend/home"
+                ? '/helpdesk-frontend/user_panel'
+                : '/helpdesk-frontend/home'
             }
-            className="back-btn"
+            className='back-btn'
           >
-            <ChevronLeft className="back-icon" />
+            <ChevronLeft className='back-icon' />
             Back
           </Link>
         </div>
 
-        <div className="info">
+        <div className='info'>
           {userInfo && (
             <>
               <LeftContainer>
-                <div className="user-info-card">
-                  <div className="user-title">
-                    <div className="logo">
+                <div className='user-info-card'>
+                  <div className='user-title'>
+                    <div className='logo'>
                       {getFirstCharaterOfUsername(userInfo.username)}
                     </div>
-                    <div className="user-info">
+                    <div className='user-info'>
                       <h2>{userInfo.username}</h2>
                       <small>{userInfo.department}</small>
                     </div>
                   </div>
-                  <div className="user-detail">
+                  <div className='user-detail'>
                     <h1>User Information</h1>
-                    <div className="list-items">
-                      <MarkEmailRead className="icon mail" />
+                    <div className='list-items'>
+                      <MarkEmailRead className='icon mail' />
                       <h2>{userInfo.email}</h2>
                     </div>
-                    <div className="list-items">
-                      <AdminPanelSettings className="icon admin" />
+                    <div className='list-items'>
+                      <AdminPanelSettings className='icon admin' />
                       <h2>
-                        {userInfo.isAdmin ? "Admin Permission" : "Normal User"}
+                        {userInfo.isAdmin ? 'Admin Permission' : 'Normal User'}
                       </h2>
                     </div>
                   </div>
                 </div>
-                <div className="recent-ticket-card">
-                  <h1 className="card-title">Recent Ticket</h1>
+                <div className='recent-ticket-card'>
+                  <h1 className='card-title'>Recent Ticket</h1>
                   {ticketList.length === 0 && (
-                    <h2 className="ph-title">
+                    <h2 className='ph-title'>
                       No Ticket Yet. How <span>Amazing</span>!
                     </h2>
                   )}
-                  <div className="card-container">
+                  <div className='card-container'>
                     {ticketList &&
                       ticketList.map((ticket) => {
-                        const { id, body, isResolved, createdAt } = ticket;
+                        const { id, body, isResolved, createdAt } = ticket
 
                         return (
-                          <div className="ticket-card" key={id}>
+                          <div className='ticket-card' key={id}>
                             <h1>{getTitleFromBody(body)}...</h1>
-                            <div className="card-detail">
+                            <div className='card-detail'>
                               <div>
                                 <h2>Posted on</h2>
                                 <small>
-                                  {moment(createdAt).format("Do MMM YYYY")}
+                                  {moment(createdAt).format('Do MMM YYYY')}
                                 </small>
                               </div>
                               {isResolved ? (
-                                <div className="status green">
-                                  <CheckCircle className="icon" />
+                                <div className='status green'>
+                                  <CheckCircle className='icon' />
                                   Resolved
                                 </div>
                               ) : (
-                                <div className="status red">
-                                  <CheckCircleOutline className="icon" />
+                                <div className='status red'>
+                                  <CheckCircleOutline className='icon' />
                                   Not Resolve
                                 </div>
                               )}
                             </div>
                           </div>
-                        );
+                        )
                       })}
                   </div>
                 </div>
               </LeftContainer>
 
               <RightContainer>
-                <div className="edit-profile-card">
+                <div className='edit-profile-card'>
                   <h1>Edit user Profile</h1>
-                  <div className="input-item">
+                  <div className='input-item'>
                     <h2>Username</h2>
                     <input
                       onChange={(e) =>
@@ -223,10 +218,10 @@ const UserProfile = () => {
                         })
                       }
                       placeholder={userInfo.username}
-                      name="username"
+                      name='username'
                     />
                   </div>
-                  <div className="input-item">
+                  <div className='input-item'>
                     <h2>Email</h2>
                     <input
                       onChange={(e) =>
@@ -236,10 +231,10 @@ const UserProfile = () => {
                         })
                       }
                       placeholder={userInfo.email}
-                      name="email"
+                      name='email'
                     />
                   </div>
-                  <div className="input-item">
+                  <div className='input-item'>
                     <h2>Password</h2>
                     <input
                       onChange={(e) =>
@@ -248,11 +243,11 @@ const UserProfile = () => {
                           password: e.target.value,
                         })
                       }
-                      placeholder="Atleast 6 Charater"
-                      name="password"
+                      placeholder='Atleast 6 Charater'
+                      name='password'
                     />
                   </div>
-                  <div className="input-item">
+                  <div className='input-item'>
                     <h2>Confirm Password</h2>
                     <input
                       onChange={(e) =>
@@ -261,24 +256,24 @@ const UserProfile = () => {
                           confirmPassword: e.target.value,
                         })
                       }
-                      placeholder="Retype Your Password"
-                      name="confirmPassword"
+                      placeholder='Retype Your Password'
+                      name='confirmPassword'
                     />
                   </div>
 
                   {Object.keys(inputValue).length > 0 && (
-                    <div onClick={() => handleUpdateProflie()} className="btn">
+                    <div onClick={() => handleUpdateProflie()} className='btn'>
                       Update
                     </div>
                   )}
                 </div>
-                <div className="danger-zone-card">
+                <div className='danger-zone-card'>
                   <h1>Danger Zone</h1>
-                  <div className="list-items">
+                  <div className='list-items'>
                     <h2>Permanent Remove Account?</h2>
                     <div
                       onClick={() => DeleteUserAccount()}
-                      className="del-btn"
+                      className='del-btn'
                     >
                       Remove
                     </div>
@@ -290,8 +285,8 @@ const UserProfile = () => {
         </div>
       </Container>
     </SectionContainer>
-  );
-};
+  )
+}
 
 const GET_USER_INFO = gql`
   query getuser($userId: ID!) {
@@ -303,7 +298,7 @@ const GET_USER_INFO = gql`
       isAdmin
     }
   }
-`;
+`
 
 const GET_USER_TICKETS = gql`
   query getTargetTicket($userId: ID!) {
@@ -314,7 +309,7 @@ const GET_USER_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const UPDATE_USER_PROFILE = gql`
   mutation updateProfile(
@@ -338,13 +333,13 @@ const UPDATE_USER_PROFILE = gql`
       isAdmin
     }
   }
-`;
+`
 
 const DELETE_USER_ACCOUNT = gql`
   mutation deleteUser($userId: ID!) {
     deleteUser(userId: $userId)
   }
-`;
+`
 
 const SectionContainer = styled.div`
   ${tw`
@@ -356,7 +351,7 @@ const SectionContainer = styled.div`
     justify-center
     bg-gray-900
   `}
-`;
+`
 
 const Container = styled.div`
   ${tw`
@@ -482,7 +477,7 @@ const Container = styled.div`
       `}
     }
   }
-`;
+`
 
 const LeftContainer = styled.div`
   ${tw`
@@ -704,7 +699,7 @@ const LeftContainer = styled.div`
       }
     }
   }
-`;
+`
 
 const RightContainer = styled.div`
   ${tw`
@@ -848,6 +843,6 @@ const RightContainer = styled.div`
       }
     }
   }
-`;
+`
 
-export default UserProfile;
+export default UserProfile

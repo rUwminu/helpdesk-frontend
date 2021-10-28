@@ -1,4 +1,5 @@
 import {
+  USER_CREATE,
   USER_DELETE,
   USER_INFO,
   USER_LIST_ALL,
@@ -9,52 +10,54 @@ import {
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
   USER_SIGNOUT,
-} from "../constant/userConstant";
+} from '../constant/userConstant'
 
-import { CLEAR_ALL_STATE } from "../constant/ticketConstant";
+import { CLEAR_ALL_STATE } from '../constant/ticketConstant'
 
 export const signin = (data) => (dispatch) => {
   dispatch({
     type: USER_SIGNIN_REQUEST,
-  });
+  })
 
   try {
     dispatch({
       type: USER_SIGNIN_SUCCESS,
       payload: data,
-    });
+    })
 
-    localStorage.setItem("user", JSON.stringify(data));
+    localStorage.setItem('user', JSON.stringify(data))
   } catch (err) {
     dispatch({
       type: USER_SIGNIN_FAIL,
       payload: err,
-    });
+    })
   }
-};
+}
 
 export const signout = () => (dispatch) => {
-  localStorage.removeItem("user");
+  localStorage.removeItem('user')
 
   dispatch({
     type: USER_SIGNOUT,
-  });
+  })
 
   dispatch({
     type: CLEAR_ALL_STATE,
-  });
-};
+  })
+}
 
 export const getAllUser = (data) => (dispatch) => {
-  dispatch({ type: USER_LIST_ALL, payload: data });
-};
+  dispatch({ type: USER_LIST_ALL, payload: data })
+}
 
 export const getSingleUser = (data) => (dispatch) => {
-  dispatch({ type: USER_INFO, payload: data });
-};
+  dispatch({ type: USER_INFO, payload: data })
+}
 
 export const deleteUser = (userId) => (dispatch) => {
-  dispatch({ type: USER_DELETE, payload: userId });
-};
+  dispatch({ type: USER_DELETE, payload: userId })
+}
 
-export const register = (data) => (dispatch) => {};
+export const register = (data) => (dispatch) => {
+  dispatch({ type: USER_CREATE, payload: data })
+}
