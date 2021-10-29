@@ -1,192 +1,219 @@
-import React, { useRef, useEffect, useState } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { gql } from "@apollo/client";
-import moment from "moment";
+import React, { useRef, useEffect, useState } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { useSelector } from 'react-redux'
+import { useHistory, useParams } from 'react-router-dom'
+import { useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import moment from 'moment'
 
-import { useReactToPrint } from "react-to-print";
+import { useReactToPrint } from 'react-to-print'
 
 class ComponentToPrint extends React.Component {
   render() {
-    const { id, username, typeTicket, body, isUrgent, createdAt } =
-      this.props.ticket;
+    const { id, username, typeTicket, body, signOff, isUrgent, createdAt } =
+      this.props.ticket
 
     const getTitleFromBody = (body) => {
-      const title = body.slice(0, 30);
+      const title = body.slice(0, 30)
 
-      return title;
-    };
+      return title
+    }
+
+    const getSignOffUserData = signOff.at(-1)
+
+    const getFirstNameFromFullName = (name) => {
+      const FN = name.split(' ')
+      return FN[0]
+    }
 
     return (
       <AfourContainer>
-        <h1 className="title">CHIGA LIGHT INDUSTRIES SDN. BHD.</h1>
-        <small className="title-small">IT REQUEST FORM</small>
+        <h1 className='title'>CHIGA LIGHT INDUSTRIES SDN. BHD.</h1>
+        <small className='title-small'>IT REQUEST FORM</small>
 
-        <div className="user-info">
+        <div className='user-info'>
           <h4>Department: {typeTicket}</h4>
           <h4>Request: {username}</h4>
-          <h4>Date: {moment(createdAt).format("Do MMM YYYY")}</h4>
+          <h4>Date: {moment(createdAt).format('Do MMM YYYY')}</h4>
         </div>
 
-        <div className="table-form">
-          <div className="request-item">
+        <div className='table-form'>
+          <div className='request-item'>
             <h4>Request</h4>
-            <div className="request-cell">{getTitleFromBody(body)}</div>
+            <div className='request-cell'>{getTitleFromBody(body)}</div>
           </div>
-          <div className="request-item">
+          <div className='request-item'>
             <h4>&nbsp;</h4>
-            <div className="request-cell">
-              <div className="cb-input">
-                <input type="checkbox" />
+            <div className='request-cell'>
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>Hardware</label>
               </div>
-              <div className="cb-input">
-                <input type="checkbox" />
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>Software / System</label>
               </div>
             </div>
           </div>
-          <div className="request-item">
+          <div className='request-item'>
             <h4>Type</h4>
-            <div className="request-cell">
-              <div className="cb-input">
-                <input type="checkbox" />
+            <div className='request-cell'>
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>New</label>
               </div>
-              <div className="cb-input">
-                <input type="checkbox" />
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>Bug fix</label>
               </div>
-              <div className="cb-input">
-                <input type="checkbox" />
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>Amendment</label>
               </div>
-              <div className="cb-input">
-                <input type="checkbox" />
+              <div className='cb-input'>
+                <input type='checkbox' />
                 <label>Repair</label>
               </div>
             </div>
           </div>
-          <div className="body-item">
+          <div className='body-item'>
             <h4>Description / Outline the Dunctionality / Purpose / Reason</h4>
-            <textarea className="body" name="desc" rows="5" cols="60">
+            <textarea className='body' name='desc' rows='5' cols='60'>
               {body}
             </textarea>
           </div>
-          <div className="request-item">
+          <div className='request-item'>
             <h4>Required Date</h4>
-            <div className="request-cell">
-              {moment(createdAt).format("Do MMM YYYY")}
+            <div className='request-cell'>
+              {moment(createdAt).format('Do MMM YYYY')}
             </div>
           </div>
-          <div className="request-item">
+          <div className='request-item'>
             <h4>Attachments(if any)</h4>
-            <div className="request-cell">&nbsp;</div>
+            <div className='request-cell'>&nbsp;</div>
           </div>
-          <div className="request-item">
+          <div className='request-item'>
             <h4>Priority</h4>
-            <div className="request-cell">
-              <div className="cb-input">
-                <input type="checkbox" checked={isUrgent && "checked"} />
+            <div className='request-cell'>
+              <div className='cb-input'>
+                <input type='checkbox' checked={isUrgent && 'checked'} />
                 <label>Hight</label>
               </div>
-              <div className="cb-input">
-                <input type="checkbox" checked={!isUrgent && "checked"} />
+              <div className='cb-input'>
+                <input type='checkbox' checked={!isUrgent && 'checked'} />
                 <label>Low</label>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="master-container">
+        <div className='master-container'>
           <h4>
             Kindly prepare and attach following document (software request only)
           </h4>
-          <h5 className="ml-4 list-item text-sm">
+          <h5 className='ml-4 list-item text-sm'>
             All related document. (with data & formula), if any
           </h5>
-          <h5 className="ml-4 list-item text-sm">
+          <h5 className='ml-4 list-item text-sm'>
             Format repuest, title and specified how data should be sorted, if
             needed.
           </h5>
 
-          <div className="master-sign">
-            <div className="sign-card">
+          <div className='master-sign'>
+            <div className='sign-card'>
               <h2>Applied By</h2>
+              <div className='sign-user'>
+                {getFirstNameFromFullName(username)}
+              </div>
               <h3>Name: {username}</h3>
-              <h3>Date: {moment().format("Do MMM YYYY")}</h3>
+              <h3>Date: {moment().format('Do MMM YYYY')}</h3>
             </div>
-            <div className="sign-card">
+            <div className='sign-card'>
               <h2>Approved by (Head of Dept)</h2>
+              <div className='sign-user'>&nbsp;</div>
               <h3>Name: </h3>
               <h3>Date: </h3>
               <p>*for new software / hardware or data amendment request only</p>
             </div>
-            <div className="sign-card">
-              <h2>Received by EDP Dept</h2>
-              <h3>Name: </h3>
-              <h3>Date: </h3>
-            </div>
-            <div className="sign-card">
+            {signOff.length > 0 ? (
+              <div className='sign-card'>
+                <h2>Received by EDP Dept</h2>
+                <div className='sign-user'>
+                  {getFirstNameFromFullName(getSignOffUserData.username)}
+                </div>
+                <h3>Name: {getSignOffUserData.username}</h3>
+                <h3>
+                  Date:{' '}
+                  {moment(getSignOffUserData.createdAt).format('Do MMM YYYY')}
+                </h3>
+              </div>
+            ) : (
+              <div className='sign-card'>
+                <h2>Received by EDP Dept</h2>
+                <div className='sign-user'>&nbsp;</div>
+                <h3>Name: </h3>
+                <h3>Date: </h3>
+              </div>
+            )}
+            <div className='sign-card'>
               <h2>Recived by (End User)</h2>
+              <div className='sign-user'>&nbsp;</div>
               <h3>Name: </h3>
               <h3>Date: </h3>
             </div>
           </div>
 
-          <div className="edp-require">
+          <div className='edp-require'>
             <h2>EDP Dept use only : Preliminary / Equiqment required</h2>
-            <textarea rows="3" cols="40" />
+            <textarea rows='3' cols='40' />
           </div>
         </div>
       </AfourContainer>
-    );
+    )
   }
 }
 
 const PdfViewer = () => {
-  const { id } = useParams();
-  const history = useHistory();
-  const componentRef = useRef();
+  const { id } = useParams()
+  const history = useHistory()
+  const componentRef = useRef()
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-  });
-  const [isFilter, setIsFilter] = useState(null);
+  })
+  const [isFilter, setIsFilter] = useState(null)
 
-  const userSignIn = useSelector((state) => state.userSignIn);
-  const { user } = userSignIn;
+  const userSignIn = useSelector((state) => state.userSignIn)
+  const { user } = userSignIn
 
   const { data } = useQuery(GET_SINGLE_TICKET, {
     context: {
       headers: {
-        Authorization: `Bearer${" "}${user.token}`,
+        Authorization: `Bearer${' '}${user.token}`,
       },
     },
     variables: { ticketId: id.toString() },
-  });
+  })
 
   useEffect(() => {
     if (data) {
-      setIsFilter(data.getTicket);
+      setIsFilter(data.getTicket)
     }
-  }, [data]);
+  }, [data])
 
-  //console.log(isFilter);
+  //console.log(isFilter)
 
   return (
     <Container>
-      <div className="inner-container">
+      <div className='inner-container'>
         {isFilter && <ComponentToPrint ref={componentRef} ticket={isFilter} />}
-        <button className="print-btn" onClick={handlePrint}>
+        <button className='print-btn' onClick={handlePrint}>
           Print this out!
         </button>
       </div>
     </Container>
-  );
-};
+  )
+}
 
 const GET_SINGLE_TICKET = gql`
   query getTicket($ticketId: ID!) {
@@ -196,10 +223,16 @@ const GET_SINGLE_TICKET = gql`
       typeTicket
       body
       isUrgent
+      signOff {
+        id
+        user
+        username
+        createdAt
+      }
       createdAt
     }
   }
-`;
+`
 
 const Container = styled.div`
   ${tw`
@@ -251,7 +284,7 @@ const Container = styled.div`
         flex-col
     `}
   }
-`;
+`
 
 const AfourContainer = styled.div`
   ${tw`
@@ -387,10 +420,17 @@ const AfourContainer = styled.div`
         padding-right: 10px;
         h2 {
           ${tw`
-            pb-10
             text-xs
+          `}
+        }
+
+        .sign-user {
+          ${tw`
+            py-2
+            text-xl
+            font-mono
             border-b
-            border-gray-900
+            border-gray-800
           `}
         }
 
@@ -433,6 +473,6 @@ const AfourContainer = styled.div`
       `}
     }
   }
-`;
+`
 
-export default PdfViewer;
+export default PdfViewer

@@ -1,61 +1,62 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { gql } from "@apollo/client";
-import { useLazyQuery } from "@apollo/client";
-import moment from "moment";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
+import moment from 'moment'
 
-import { getTicket } from "../../redux/action/ticketAction";
+import { getTicket } from '../../redux/action/ticketAction'
 
-//Icon class
+//Icon class & SVG
 import {
   LocationOnOutlined,
   CheckCircle,
   CheckCircleOutline,
   Add,
   ExpandMore,
-} from "@mui/icons-material";
+} from '@mui/icons-material'
+import Noitem from '../../assets/Svg/Noitem.svg'
 
 // Utils
-import getFirstCharaterOfUsername from "../../utils/getFirstCharOfUsername";
+import getFirstCharaterOfUsername from '../../utils/getFirstCharOfUsername'
 
-import { NewTicket, TicketCardPH, SidebarSmall } from "../index";
+import { NewTicket, TicketCardPH, SidebarSmall } from '../index'
 
 const JobCard = ({ location, isMedium }) => {
-  const dispatch = useDispatch();
-  const [isActive, setIsActive] = useState(false);
-  const [tempTicketList, setTempTicketList] = useState([]);
-  const [isCreateScreen, setIsCreateScreen] = useState(false);
+  const dispatch = useDispatch()
+  const [isActive, setIsActive] = useState(false)
+  const [tempTicketList, setTempTicketList] = useState([])
+  const [isCreateScreen, setIsCreateScreen] = useState(false)
 
   // Temp useState
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true)
 
-  const userSignIn = useSelector((state) => state.userSignIn);
-  const { user } = userSignIn;
+  const userSignIn = useSelector((state) => state.userSignIn)
+  const { user } = userSignIn
 
-  const ticketList = useSelector((state) => state.ticketList);
-  const { tickets, isUrgent, filterType, resolved } = ticketList;
+  const ticketList = useSelector((state) => state.ticketList)
+  const { tickets, isUrgent, filterType, resolved } = ticketList
 
   const checkTicketResolveType = () => {
     if (!resolved) {
-      return GET_INPROCESS_TICKETS;
+      return GET_INPROCESS_TICKETS
     } else if (resolved) {
-      return GET_COMPLETED_TICKETS;
+      return GET_COMPLETED_TICKETS
     }
-  };
+  }
 
   const [getTicketOnLoad, { loading, data }] = useLazyQuery(
     user.isAdmin ? checkTicketResolveType() : GET_SELF_TICKETS,
     {
       context: {
         headers: {
-          Authorization: `Bearer${" "}${user.token}`,
+          Authorization: `Bearer${' '}${user.token}`,
         },
       },
     }
-  );
+  )
 
   // Test Query, ignore this
   // const [getResolvedTypeTicket, { data: lazyData }] = useLazyQuery(
@@ -74,73 +75,73 @@ const JobCard = ({ location, isMedium }) => {
     if (!loading && data) {
       if (user.isAdmin) {
         if (!resolved) {
-          dispatch(getTicket(data.getInProcessTickets));
+          dispatch(getTicket(data.getInProcessTickets))
         } else {
-          dispatch(getTicket(data.getCompletedTickets));
+          dispatch(getTicket(data.getCompletedTickets))
         }
       } else {
-        dispatch(getTicket(data.getSelfTicket));
+        dispatch(getTicket(data.getSelfTicket))
       }
     }
-  }, [data]);
+  }, [data])
 
   // Filter Ticket by is Urgent and filter by department type
   useEffect(() => {
     if (tickets) {
-      setIsLoading(true);
+      setIsLoading(true)
       if (isUrgent) {
-        const tempArray = tickets.filter((x) => x.isUrgent === isUrgent);
+        const tempArray = tickets.filter((x) => x.isUrgent === isUrgent)
 
         if (filterType && filterType.length > 0) {
           setTempTicketList(
             tempArray.filter((x) => filterType.includes(x.typeTicket))
-          );
-          setIsLoading(false);
+          )
+          setIsLoading(false)
         } else {
-          setTempTicketList(tempArray);
-          setIsLoading(false);
+          setTempTicketList(tempArray)
+          setIsLoading(false)
         }
       } else {
         if (filterType && filterType.length > 0) {
           setTempTicketList(
             tickets.filter((x) => filterType.includes(x.typeTicket))
-          );
-          setIsLoading(false);
+          )
+          setIsLoading(false)
         } else {
-          setTempTicketList(tickets);
-          setIsLoading(false);
+          setTempTicketList(tickets)
+          setIsLoading(false)
         }
       }
     }
-  }, [tickets, isUrgent, filterType, loading]);
+  }, [tickets, isUrgent, filterType, loading])
 
   // Refetch tickets list when user select in process or closed tickets
   useEffect(() => {
-    getTicketOnLoad();
-  }, [resolved]);
+    getTicketOnLoad()
+  }, [resolved])
 
   const getTitleFromBody = (body) => {
-    const title = body.slice(0, 30);
+    const title = body.slice(0, 30)
 
-    return title;
-  };
+    return title
+  }
 
   return (
     <>
       <OuterMainContainer>
         <AbsoluteTopAddButton>
-          <div onClick={() => setIsCreateScreen(true)} className="add-button">
+          <div onClick={() => setIsCreateScreen(true)} className='add-button'>
             <Add /> Add Ticket
           </div>
         </AbsoluteTopAddButton>
         <AbsoluteTopFilterButton>
-          <div onClick={() => setIsActive(!isActive)} className="btn">
+          <div onClick={() => setIsActive(!isActive)} className='btn'>
             <h2>Filter</h2>
-            <ExpandMore className="filter-icon" />
+            <ExpandMore className='filter-icon' />
           </div>
           <AbsoluteFilterList
             onMouseLeave={() => setIsActive(false)}
-            className={`${isActive ? "h-[36rem]" : "h-0"}`}
+            className={`${isActive ? 'h-[36rem]' : 'h-0'}`}
           >
             <SidebarSmall />
           </AbsoluteFilterList>
@@ -149,46 +150,54 @@ const JobCard = ({ location, isMedium }) => {
           <Container>
             {tempTicketList.map((ticket) => {
               const { id, username, body, isUrgent, typeTicket, createdAt } =
-                ticket;
+                ticket
 
               return (
                 <Link to={`/helpdesk-frontend/${location}/${id}`} key={id}>
                   <Card>
-                    <div className="card-top">
-                      <div className="logo" alt="logo">
+                    <div className='card-top'>
+                      <div className='logo' alt='logo'>
                         {getFirstCharaterOfUsername(username)}
                       </div>
-                      <div className="card-title">
+                      <div className='card-title'>
                         <h2>{getTitleFromBody(body)} ...</h2>
                         <p>
-                          <LocationOnOutlined className="icons" />
+                          <LocationOnOutlined className='icons' />
                           {typeTicket}
                         </p>
                       </div>
                     </div>
-                    <div className="card-bottom">
-                      <div className="card-tag">
+                    <div className='card-bottom'>
+                      <div className='card-tag'>
                         <h2>
-                          Posted On {moment(createdAt).format("Do MMM YYYY")}
+                          Posted On {moment(createdAt).format('Do MMM YYYY')}
                         </h2>
                         <h3>by {username}</h3>
                       </div>
                       {isUrgent ? (
-                        <div className="verify">
-                          <CheckCircle className="valid icon" />
+                        <div className='verify'>
+                          <CheckCircle className='valid icon' />
                           Is Urgent
                         </div>
                       ) : (
-                        <div className="verify">
-                          <CheckCircleOutline className="invalid icon" />
+                        <div className='verify'>
+                          <CheckCircleOutline className='invalid icon' />
                           Not Urgent
                         </div>
                       )}
                     </div>
                   </Card>
                 </Link>
-              );
+              )
             })}
+            {tempTicketList.length === 0 && (
+              <div className='no-ticket'>
+                <h1>
+                  No Ticket Yet, Start<span> Create One?</span>
+                </h1>
+                <img className='noitem-svg' src={Noitem} alt='' />
+              </div>
+            )}
           </Container>
         ) : (
           <Container>
@@ -201,8 +210,8 @@ const JobCard = ({ location, isMedium }) => {
 
       <NewTicket state={isCreateScreen} toggle={setIsCreateScreen} />
     </>
-  );
-};
+  )
+}
 
 const GET_INPROCESS_TICKETS = gql`
   {
@@ -223,7 +232,7 @@ const GET_INPROCESS_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const GET_COMPLETED_TICKETS = gql`
   {
@@ -244,7 +253,7 @@ const GET_COMPLETED_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const GET_SELF_TICKETS = gql`
   {
@@ -265,7 +274,7 @@ const GET_SELF_TICKETS = gql`
       createdAt
     }
   }
-`;
+`
 
 const OuterMainContainer = styled.div`
   ${tw`
@@ -279,7 +288,7 @@ const OuterMainContainer = styled.div`
     max-h-[50rem]
     max-w-[26.5rem]
   `}
-`;
+`
 
 const Container = styled.div`
   ${tw`
@@ -290,7 +299,36 @@ const Container = styled.div`
     overflow-y-scroll
     scrollbar-hide
   `}
-`;
+
+  .no-ticket {
+    ${tw`
+      w-full
+      flex
+      flex-col
+    `}
+
+    h1 {
+      ${tw`
+        py-4
+        text-xl
+        text-gray-300
+      `}
+
+      span {
+        ${tw`
+          text-green-500
+        `}
+      }
+    }
+
+    .noitem-svg {
+      ${tw`
+        w-full
+        opacity-50
+      `}
+    }
+  }
+`
 
 const Card = styled.div`
   ${tw`
@@ -413,7 +451,7 @@ const Card = styled.div`
       }
     }
   }
-`;
+`
 
 const AbsoluteTopAddButton = styled.div`
   ${tw`
@@ -438,7 +476,7 @@ const AbsoluteTopAddButton = styled.div`
       hover:bg-gray-700
     `}
   }
-`;
+`
 
 const AbsoluteTopFilterButton = styled.div`
   ${tw`
@@ -463,7 +501,7 @@ const AbsoluteTopFilterButton = styled.div`
       hover:bg-gray-700
     `}
   }
-`;
+`
 
 const AbsoluteFilterList = styled.div`
   ${tw`
@@ -481,6 +519,6 @@ const AbsoluteFilterList = styled.div`
     z-10
   `}
   box-shadow: -1px -3px 207px -29px rgba(0,0,0,1);
-`;
+`
 
-export default JobCard;
+export default JobCard

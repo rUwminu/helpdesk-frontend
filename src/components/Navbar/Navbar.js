@@ -150,10 +150,13 @@ const Navbar = () => {
                 onMouseLeave={() => setIsDropOption(false)}
               >
                 <h2>Option</h2>
-                <div className='option-item'>
+                <Link
+                  to={`/helpdesk-frontend/user/${user.id}`}
+                  className='option-item'
+                >
                   <h3>Profile</h3>
                   <AssignmentInd className='option-icon' />
-                </div>
+                </Link>
                 <div onClick={() => handleLogout()} className='option-item'>
                   <h3>Logout</h3>
                   <Logout className='option-icon' />

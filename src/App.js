@@ -20,7 +20,9 @@ import {
   UserProfile,
   BlogPage,
   PdfViewer,
+  ErrorPage,
 } from './pages/index'
+import PrivateRoute from './utils/PrivateRoute'
 
 function App() {
   const client = new ApolloClient({
@@ -36,48 +38,44 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Router>
+        {user && <Navbar />}
         <Switch>
-          <Route path={`${baseUrl}/login`}>
-            {user ? <Redirect to={`${baseUrl}/home`} /> : <Login />}
+          <Route path={`/login`}>
+            {user ? <Redirect to={`/helpdesk-frontend/home`} /> : <Login />}
           </Route>
-          {user ? (
-            <>
-              <Navbar />
-              <Route path={`${baseUrl}/home`} exact>
-                <Home />
-              </Route>
-              <Route path={`${baseUrl}/home/:id`} exact>
-                <Home />
-              </Route>
-              <Route path={`${baseUrl}/ticket_detail/:id`}>
-                <TicketDetail />
-              </Route>
-              <Route path={`${baseUrl}/user/:id`}>
-                <UserProfile />
-              </Route>
-              <Route path={`${baseUrl}/Blog`}>
-                <BlogPage />
-              </Route>
-              <Route path={`${baseUrl}/pdf_view/:id`}>
-                <PdfViewer />
-              </Route>
 
-              <>
-                <Route path={`${baseUrl}/ticket_panel`}>
-                  <TicketPanel />
-                </Route>
-                <Route path={`${baseUrl}/user_panel`}>
-                  <UserPanel />
-                </Route>
-              </>
+          <Route path={`/helpdesk-frontend/home`} exact={true}>
+            <Home />
+          </Route>
+          <Route path={`/helpdesk-frontend/home/:id`} exact={true}>
+            <Home />
+          </Route>
+          <Route path={`/helpdesk-frontend/ticket_detail/:id`}>
+            <TicketDetail />
+          </Route>
+          <Route path={`/helpdesk-frontend/user/:id`}>
+            <UserProfile />
+          </Route>
+          <Route path={`/helpdesk-frontend/Blog`}>
+            <BlogPage />
+          </Route>
+          <Route path={`/helpdesk-frontend/pdf_view/:id`}>
+            <PdfViewer />
+          </Route>
 
-              <Route path={`${baseUrl}/ticket_report`}>
-                <TicketReport />
-              </Route>
-            </>
-          ) : (
-            <Redirect to={`${baseUrl}/login`} />
-          )}
+          <PrivateRoute path={`/helpdesk-frontend/ticket_panel`}>
+            <TicketPanel />
+          </PrivateRoute>
+          <PrivateRoute path={`/helpdesk-frontend/ticket_report`}>
+            <TicketReport />
+          </PrivateRoute>
+          <PrivateRoute path={`/helpdesk-frontend/user_panel`}>
+            <UserPanel />
+          </PrivateRoute>
+
+          <Route path='*' exact={true}>
+            <ErrorPage />
+          </Route>
         </Switch>
       </Router>
     </ApolloProvider>

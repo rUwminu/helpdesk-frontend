@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import { gql, useQuery } from '@apollo/client'
 import { useSelector } from 'react-redux'
 import MaterialTable from 'material-table'
 import XLSX from 'xlsx'
 import moment from 'moment'
+
+// Icons
+import { ChevronLeft } from '@mui/icons-material'
 
 const TicketReport = () => {
   const [ticketsList, setTicketsList] = useState([])
@@ -21,18 +25,25 @@ const TicketReport = () => {
     },
   })
 
+  const getShortBody = (body) => {
+    const title = body.slice(0, 60)
+
+    return title
+  }
+
   const columns = [
-    {
-      title: 'id',
-      field: 'id',
-    },
     { title: 'Name', field: 'username' },
     {
       title: 'Position',
       field: 'typeTicket',
-      width: '50px',
     },
-    { title: 'Description', field: 'body' },
+    {
+      title: 'Description',
+      field: 'body',
+      render: (params) => {
+        return <div>{getShortBody(params.body)}</div>
+      },
+    },
     {
       title: 'Resolved',
       field: 'isResolved',
@@ -54,6 +65,7 @@ const TicketReport = () => {
   const exportToExcelFile = () => {
     const newdata = ticketsList.map((row) => {
       delete row.__typename
+      delete row.id
       delete row.tableData
 
       return row
@@ -77,11 +89,14 @@ const TicketReport = () => {
     }
   }, [data])
 
-  //console.log(ticketsList)
 
   return (
     <Container>
       <div className='inner-container'>
+        <Link to='/helpdesk-frontend/ticket_panel' className='back-btn'>
+          <ChevronLeft className='back-icon' />
+          Go Back
+        </Link>
         {ticketsList.length > 0 && (
           <MaterialTable
             title='Completed Tickets'
@@ -98,7 +113,7 @@ const TicketReport = () => {
               },
             ]}
             options={{
-              tableLayout: 'fixed',
+              tableLayout: 'Auto',
             }}
           />
         )}
@@ -123,6 +138,7 @@ const GET_COMPLETE_TICKETS = gql`
 const Container = styled.div`
   ${tw`
     pt-36
+    pb-14
     px-4
     lg:px-0
     w-full
@@ -136,6 +152,90 @@ const Container = styled.div`
         w-full
         max-w-6xl
     `}
+
+    .back-btn {
+      ${tw`
+        flex
+        items-center
+        justify-center
+        py-1
+        pr-3
+        mb-4
+        w-36
+        md:text-lg
+        text-gray-200
+        font-semibold
+        rounded-md
+        transition
+        duration-200
+        ease-in-out
+        overflow-hidden
+      `}
+
+      .back-icon {
+        ${tw`
+          relative
+          text-xl
+          md:text-3xl
+          transition
+          duration-200
+          ease-in-out
+        `}
+      }
+
+      :hover {
+        ${tw`
+          bg-gray-700
+        `}
+
+        .back-icon {
+          animation: backAnimate 2.5s ease infinite;
+        }
+      }
+    }
+
+    @keyframes backAnimate {
+      20% {
+        ${tw`
+        opacity-0
+        -translate-x-full
+      `}
+      }
+      30% {
+        ${tw`
+        opacity-0
+        translate-x-full
+      `}
+      }
+      40% {
+        ${tw`
+        opacity-100
+        translate-x-0
+        left-1
+      `}
+      }
+      50% {
+        ${tw`
+        left-0
+      `}
+      }
+      55% {
+        ${tw`
+        left-1
+      `}
+      }
+      60% {
+        ${tw`
+        left-0
+      `}
+      }
+      100% {
+        ${tw`
+        left-0
+        translate-x-0
+      `}
+      }
+    }
   }
 `
 

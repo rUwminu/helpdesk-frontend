@@ -191,7 +191,7 @@ const SectionContainer = styled.div`
   ${tw`
     relative
     flex
-    items-center
+    items-start
     justify-center
     w-screen
     min-h-[100vh]
@@ -201,7 +201,7 @@ const SectionContainer = styled.div`
 
 const Container = styled.div`
   ${tw`
-    pt-28
+    pt-36
     px-4
     xl:px-0
     h-full

@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { gql } from '@apollo/client'
 import { useLazyQuery } from '@apollo/client'
+import { Link } from 'react-router-dom'
 
 // Redux action
 import { getAllTicketType } from '../../redux/action/ticketAction'
@@ -155,10 +156,13 @@ const TicketPanel = () => {
               <ViewDay className='icon' />
               <span>View Tickets</span>
             </div>
-            <div className='option-tag report'>
+            <Link
+              to='/helpdesk-frontend/ticket_report'
+              className='option-tag report'
+            >
               <ExitToApp className='icon' />
               <span>Get Report</span>
-            </div>
+            </Link>
           </div>
         </div>
 
