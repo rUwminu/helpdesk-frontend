@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { gql } from '@apollo/client'
-import { useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { Link } from 'react-router-dom'
+
+//firebase
+import storage from '../../firebase'
+import { ref, listAll, deleteObject } from 'firebase/storage'
 
 // Redux action
 import { getAllTicketType } from '../../redux/action/ticketAction'
@@ -75,6 +78,17 @@ const TicketPanel = () => {
     },
   })
 
+  const [deleteAllTicketInDB] = useMutation(DELETE_ALL_TICKETS, {
+    context: {
+      headers: {
+        Authorization: `Bearer${' '}${user.token}`,
+      },
+    },
+    update(_, { data }) {
+      alert(data.deleteAllTicket)
+    },
+  })
+
   const calAllTicketCompletePercentage = () => {
     const total = allTicketsType.length
     const completion = allTicketsType.filter((x) => x.isResolved === true)
@@ -128,6 +142,31 @@ const TicketPanel = () => {
     setReducedType(Object.values(countType))
 
     return countType
+  }
+
+  const handleTicketCleanUp = async () => {
+    // Clean up the firebase image storage
+    const storageRef = ref(storage, `/items`)
+    await listAll(storageRef)
+      .then((res) => {
+        res.items.forEach((item) => {
+          const itemRef = ref(storage, `${item._location.path}`)
+
+          deleteObject(itemRef)
+            .then(() => {
+              console.log('items delete')
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+
+    // Clean up mongodb storage
+    deleteAllTicketInDB()
   }
 
   useEffect(() => {
@@ -204,6 +243,18 @@ const TicketPanel = () => {
         <div className='mid-container'>
           <LineChartComponent grid />
         </div>
+        <div className='bot-container'>
+          <h1>Danger Zone</h1>
+          <div className='del-card'>
+            <p>
+              This will clear up all the ticket in database.
+              <br /> <span>*Only Perform this action on clean up day</span>
+            </p>
+            <div onClick={() => handleTicketCleanUp()} className='del-btn'>
+              Remove All Tickets
+            </div>
+          </div>
+        </div>
       </div>
     </Container>
   )
@@ -217,6 +268,12 @@ const GET_ALL_TICKETS = gql`
       isUrgent
       isResolved
     }
+  }
+`
+
+const DELETE_ALL_TICKETS = gql`
+  mutation deleteAllTicket {
+    deleteAllTicket
   }
 `
 
@@ -375,18 +432,80 @@ const Container = styled.div`
 
   .mid-container {
     ${tw`
-        mt-8
+        mt-6
         w-full
     `}
   }
 
   .bot-container {
     ${tw`
+        py-6
+        px-10
+        mt-6
+        w-full
         flex
-        flex-wrap
-        items-center
-        justify-between
+        flex-col
+        items-start
+        justify-start
+        bg-red-900
+        bg-opacity-50
+        rounded-md
     `}
+
+    h1 {
+      ${tw`
+        mb-4
+        text-lg
+        md:text-xl
+        lg:text-2xl
+        text-red-600
+        font-semibold
+      `}
+    }
+
+    .del-card {
+      ${tw`
+        w-full
+        flex
+        flex-col
+        md:flex-row
+        md:items-center
+        justify-between
+      `}
+
+      p {
+        ${tw`
+          text-gray-100
+        `}
+
+        span {
+          ${tw`
+            ml-4
+            text-gray-300
+          `}
+        }
+      }
+
+      .del-btn {
+        ${tw`
+          mt-3
+          md:mt-0
+          py-2
+          px-6
+          text-center
+          bg-red-800
+          text-gray-200
+          font-semibold
+          rounded-md
+          cursor-pointer
+          transition
+          duration-200
+          ease-in-out
+
+          hover:bg-red-700
+        `}
+      }
+    }
   }
 `
 

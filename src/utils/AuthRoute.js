@@ -1,5 +1,5 @@
 import { Route, Redirect } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector} from 'react-redux'
 
 const PrivateRoute = ({ children, ...rest }) => {
   // Get the login data and check is user logined
@@ -10,14 +10,10 @@ const PrivateRoute = ({ children, ...rest }) => {
     <Route
       {...rest}
       render={() => {
-        if (!user) {
-          return <Redirect to='/helpdesk-frontend/login' />
-        }
-
-        return user.isAdmin ? (
+        return user ? (
           children
         ) : (
-          <Redirect to='/helpdesk-frontend/home' />
+          <Redirect to='/helpdesk-frontend/login' />
         )
       }}
     ></Route>

@@ -29,6 +29,14 @@ export const getTicket = (data) => (dispatch) => {
   }
 };
 
+export const createTicket = (data) => (dispatch) => {
+  try {
+    
+  } catch (err) {
+    
+  }
+}
+
 export const filterTicketsUrgent = (isUrgent) => (dispatch) => {
   if (isUrgent) {
     dispatch({ type: IS_URGENT_TRUE });

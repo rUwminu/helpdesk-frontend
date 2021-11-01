@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux'
 import { register } from '../../redux/action/userAction'
 
 // Icons
-import { CheckCircle, CloudUpload, Close } from '@mui/icons-material'
+import { CheckCircle, CloudUpload, Cancel, Close } from '@mui/icons-material'
 
 const UserCreate = ({ setIsSideActive }) => {
   const dispatch = useDispatch()
@@ -23,14 +23,14 @@ const UserCreate = ({ setIsSideActive }) => {
   }
   const [isActive, setIsActive] = useState(false)
   const [inputValue, setInputValue] = useState(InputState)
-  const [isError, setIsError] = useState(null)
+  const [isError, setIsError] = useState({})
 
   const [registerUser] = useMutation(REGISTER_NEW_USER, {
     update(_, { data: { register: userData } }) {
       dispatch(register(userData))
     },
     onError(err) {
-      setIsError(err)
+      setIsError(err.graphQLErrors[0].extensions.errors)
     },
     variables: inputValue,
   })
@@ -40,7 +40,7 @@ const UserCreate = ({ setIsSideActive }) => {
   }
 
   const handleCreate = () => {
-    setIsError(null)
+    setIsError({})
 
     if (
       inputValue.username !== '' &&
@@ -49,6 +49,7 @@ const UserCreate = ({ setIsSideActive }) => {
       inputValue.password !== '' &&
       inputValue.confirmPassword !== ''
     ) {
+      setIsError({})
       setIsActive(true)
       registerUser()
     } else {
@@ -60,8 +61,10 @@ const UserCreate = ({ setIsSideActive }) => {
     }, 13000)
   }
 
+  console.log(isError)
+
   return (
-    <Container>
+    <Container color={isError}>
       <div className='top-container'>
         <div onClick={() => setIsSideActive(false)} className='close-btn'>
           <Close className='icon' />
@@ -71,7 +74,11 @@ const UserCreate = ({ setIsSideActive }) => {
         <h1>
           Create <span>New User</span>
         </h1>
-        <div className='input-items'>
+        <div
+          className={`input-items ${
+            isError.username ? 'border-red-500' : 'border-gray-400'
+          }`}
+        >
           <input
             onChange={handleChange}
             type='text'
@@ -79,9 +86,16 @@ const UserCreate = ({ setIsSideActive }) => {
             value={inputValue.username}
             required
           />
-          <span>Username</span>
+          <span className='input-ph'>Username</span>
+          {isError.username && (
+            <span className='input-error'>{isError.username}</span>
+          )}
         </div>
-        <div className='input-items'>
+        <div
+          className={`input-items ${
+            isError.email ? 'border-red-500' : 'border-gray-400'
+          }`}
+        >
           <input
             onChange={handleChange}
             type='text'
@@ -89,9 +103,12 @@ const UserCreate = ({ setIsSideActive }) => {
             value={inputValue.email}
             required
           />
-          <span>User Email</span>
+          <span className='input-ph'>User Email</span>
+          {isError.email && (
+            <span className='input-error'>{isError.email}</span>
+          )}
         </div>
-        <div className='input-items'>
+        <div className='input-items border-gray-400'>
           <input
             onChange={handleChange}
             type='text'
@@ -99,9 +116,13 @@ const UserCreate = ({ setIsSideActive }) => {
             value={inputValue.department}
             required
           />
-          <span>Department</span>
+          <span className='input-ph'>Department</span>
         </div>
-        <div className='input-items'>
+        <div
+          className={`input-items ${
+            isError.password ? 'border-red-500' : 'border-gray-400'
+          }`}
+        >
           <input
             onChange={handleChange}
             type='password'
@@ -109,9 +130,16 @@ const UserCreate = ({ setIsSideActive }) => {
             value={inputValue.password}
             required
           />
-          <span>Password</span>
+          <span className='input-ph'>Password</span>
+          {isError.password && (
+            <span className='input-error'>{isError.password}</span>
+          )}
         </div>
-        <div className='input-items'>
+        <div
+          className={`input-items ${
+            isError.confirmPassword ? 'border-red-500' : 'border-gray-400'
+          }`}
+        >
           <input
             onChange={handleChange}
             type='password'
@@ -119,16 +147,29 @@ const UserCreate = ({ setIsSideActive }) => {
             value={inputValue.confirmPassword}
             required
           />
-          <span>Confirm Password</span>
+          <span className='input-ph'>Confirm Password</span>
+          {isError.confirmPassword && (
+            <span className='input-error'>{isError.confirmPassword}</span>
+          )}
+          {isError.error && (
+            <span className='input-error'>{isError.error}</span>
+          )}
         </div>
         <UploadBtn
           onClick={() => handleCreate()}
           className={`${isActive && 'active'}`}
         >
-          <div className='completed'>
-            <CheckCircle className='icons' />
-            <span>Completed</span>
-          </div>
+          {!Object.keys(isError).length ? (
+            <div className='completed'>
+              <CheckCircle className='icons' />
+              <span>Completed</span>
+            </div>
+          ) : (
+            <div className='error'>
+              <Cancel className='icons' />
+              <span>Error</span>
+            </div>
+          )}
           <div className='upload'>
             <CloudUpload className='icons' />
             <span>Create</span>
@@ -232,29 +273,30 @@ const Container = styled.div`
       w-full
       max-w-md
       mb-8
-      border
-      border-gray-400
+      border-2
       rounded-sm
     `}
 
       input {
         ${tw`
-        py-2
+        py-3
         md:py-3
         px-4
         w-full
+        bg-gray-700
+        text-gray-200
         focus:outline-none
         valid:bg-none
       `}
       }
 
-      span {
+      .input-ph {
         ${tw`
         absolute
-        py-2
+        py-3
         md:py-3
         left-4
-        text-gray-600
+        text-gray-50
         transition
         duration-500
         ease-in-out
@@ -262,16 +304,36 @@ const Container = styled.div`
         pointer-events: none;
       }
 
-      input:focus ~ span,
-      input:valid ~ span,
-      textarea:focus ~ span,
-      textarea:valid ~ span {
+      .input-error {
+        ${tw`
+          absolute
+          bottom-0
+          left-0
+          ml-6
+          list-item
+          text-red-400
+          font-semibold
+          translate-y-full
+        `}
+      }
+
+      input:focus ~ .input-ph,
+      input:valid ~ .input-ph,
+      textarea:focus ~ .input-ph,
+      textarea:valid ~ .input-ph {
         ${tw`
           text-sm
-          text-gray-900
           font-semibold
           translate-y-[-16px]
         `}
+      }
+
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      input:-webkit-autofill:active {
+        -webkit-text-fill-color: rgba(249, 250, 251, 1);
+        -webkit-box-shadow: 0 0 0 50px rgba(55, 65, 81, 1) inset;
       }
     }
   }
@@ -291,7 +353,13 @@ const Container = styled.div`
     left: 0;
     width: 0%;
     height: 100%;
-    background: #5c5cff;
+    background: ${(props) => {
+      if (Object.keys(props.color).length) {
+        return '#DC143C'
+      } else {
+        return '#5c5cff'
+      }
+    }};
     animation: before_active 10s linear forwards;
     animation-delay: 1.5s;
   }
@@ -310,6 +378,11 @@ const Container = styled.div`
   }
 
   .active .completed {
+    animation: top_bottom 1.3s linear forwards;
+    animation-delay: 6.5s;
+  }
+
+  .active .error {
     animation: top_bottom 1.3s linear forwards;
     animation-delay: 6.5s;
   }
@@ -428,6 +501,20 @@ const UploadBtn = styled.div`
   }
 
   .completed {
+    ${tw`
+        absolute
+        top-[0%]
+        left-[50%]
+        flex
+        items-center
+        justify-center
+        text-gray-900
+    `}
+    transform: translate(-50%, -60px);
+    white-space: nowrap;
+  }
+
+  .error {
     ${tw`
         absolute
         top-[0%]

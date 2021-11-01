@@ -22,6 +22,7 @@ import {
   PdfViewer,
   ErrorPage,
 } from './pages/index'
+import AuthRoute from './utils/AuthRoute'
 import PrivateRoute from './utils/PrivateRoute'
 
 function App() {
@@ -40,29 +41,27 @@ function App() {
       <Router>
         {user && <Navbar />}
         <Switch>
-          <Route path={`/login`}>
+          <Route path={`/helpdesk-frontend/login`}>
             {user ? <Redirect to={`/helpdesk-frontend/home`} /> : <Login />}
           </Route>
-
-          <Route path={`/helpdesk-frontend/home`} exact={true}>
+          <AuthRoute path={`/helpdesk-frontend/home`} exact={true}>
             <Home />
-          </Route>
-          <Route path={`/helpdesk-frontend/home/:id`} exact={true}>
+          </AuthRoute>
+          <AuthRoute path={`/helpdesk-frontend/home/:id`} exact={true}>
             <Home />
-          </Route>
-          <Route path={`/helpdesk-frontend/ticket_detail/:id`}>
+          </AuthRoute>
+          <AuthRoute path={`/helpdesk-frontend/ticket_detail/:id`}>
             <TicketDetail />
-          </Route>
-          <Route path={`/helpdesk-frontend/user/:id`}>
+          </AuthRoute>
+          <AuthRoute path={`/helpdesk-frontend/user/:id`}>
             <UserProfile />
-          </Route>
-          <Route path={`/helpdesk-frontend/Blog`}>
+          </AuthRoute>
+          <AuthRoute path={`/helpdesk-frontend/Blog`}>
             <BlogPage />
-          </Route>
-          <Route path={`/helpdesk-frontend/pdf_view/:id`}>
+          </AuthRoute>
+          <AuthRoute path={`/helpdesk-frontend/pdf_view/:id`}>
             <PdfViewer />
-          </Route>
-
+          </AuthRoute>
           <PrivateRoute path={`/helpdesk-frontend/ticket_panel`}>
             <TicketPanel />
           </PrivateRoute>
@@ -72,7 +71,6 @@ function App() {
           <PrivateRoute path={`/helpdesk-frontend/user_panel`}>
             <UserPanel />
           </PrivateRoute>
-
           <Route path='*' exact={true}>
             <ErrorPage />
           </Route>

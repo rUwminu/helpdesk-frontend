@@ -69,10 +69,11 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(signout())
-    history.push('/login')
+    history.push('/helpdesk-frontend/login')
   }
 
   function refreshPage() {
+    setIsActive(false)
     setTimeout(() => {
       window.location.reload(false)
     }, 500)
@@ -170,6 +171,13 @@ const Navbar = () => {
                 isActive ? 'translate-x-0 shadow-md' : 'translate-x-full '
               }`}
             >
+              <Link
+                to={`/helpdesk-frontend/home`}
+                onClick={() => refreshPage()}
+                className={`nav-link`}
+              >
+                Home
+              </Link>
               <Link
                 to={`/helpdesk-frontend/user_panel`}
                 onClick={() => refreshPage()}

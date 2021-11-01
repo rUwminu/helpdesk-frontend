@@ -27,7 +27,7 @@ const LOGIN_USER = gql`
 const Login = () => {
   const history = useHistory()
   const dispatch = useDispatch()
-  const [isError, setIsError] = useState()
+  const [isError, setIsError] = useState({})
   const InputState = {
     username: '',
     email: '',
@@ -42,7 +42,7 @@ const Login = () => {
       dispatch(signin(userData))
     },
     onError(err) {
-      console.log(err.graphQLErrors[0].extensions.exception.errors)
+      setIsError(err.graphQLErrors[0].extensions.errors)
     },
     variables: inputValue,
   })
@@ -53,8 +53,11 @@ const Login = () => {
 
   const handlerClick = (e) => {
     e.preventDefault()
+    setIsError({})
     loginUser()
   }
+
+  console.log(isError)
 
   return (
     <Container>
@@ -63,7 +66,11 @@ const Login = () => {
           <h1>
             Login To <span>HelpDesk</span>
           </h1>
-          <div className='input-items'>
+          <div
+            className={`input-items ${
+              isError.username ? 'border-red-500' : 'border-gray-400'
+            }`}
+          >
             <input
               onChange={handleChange}
               type='text'
@@ -73,7 +80,14 @@ const Login = () => {
             />
             <span>Your Email</span>
           </div>
-          <div className='input-items'>
+          {isError.username && (
+            <div className='err-list'>{isError.username}</div>
+          )}
+          <div
+            className={`input-items ${
+              isError.password ? 'border-red-500' : 'border-gray-400'
+            }`}
+          >
             <input
               onChange={handleChange}
               type='password'
@@ -83,6 +97,10 @@ const Login = () => {
             />
             <span>Password</span>
           </div>
+          {isError.password && (
+            <div className='err-list'>{isError.password}</div>
+          )}
+          {isError && <div className='err-items'></div>}
           <button onClick={(e) => handlerClick(e)}>Login</button>
         </LeftContainer>
         <RightContainer>
@@ -132,7 +150,6 @@ const LeftContainer = styled.div`
 
   h1 {
     ${tw`
-      mb-6
       text-2xl
       md:text-3xl
     `}
@@ -149,10 +166,12 @@ const LeftContainer = styled.div`
       relative
       w-full
       max-w-md
-      mb-8
+      mt-6
       border
-      border-gray-400
       rounded-sm
+      transition-all
+      duration-200
+      ease-in-out
     `}
 
     input {
@@ -190,8 +209,22 @@ const LeftContainer = styled.div`
     }
   }
 
+  .err-list {
+    ${tw`
+        ml-6
+        list-item
+        text-red-500
+        font-semibold
+      `}
+  }
+
+  .err-items {
+    ${tw``}
+  }
+
   button {
     ${tw`
+        mt-6
         py-4
         w-full
         max-w-md

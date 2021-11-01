@@ -1,81 +1,50 @@
-import React, { useState, useEffect } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
-import { Sidebar, JobCard, JobInfo } from "../../components/index";
+import React, { useState, useEffect } from 'react'
+import tw from 'twin.macro'
+import styled from 'styled-components'
+import { Sidebar, JobCard, JobInfo } from '../../components/index'
 
 // Icon
 // import { ExpandMore } from "@mui/icons-material";
 
 const Home = () => {
-  // const dispatch = useDispatch();
-  const [isMedium, setIsMedium] = useState(false);
-  const [isSmall, setIsIsSmall] = useState(false);
-
-  // const userSignIn = useSelector((state) => state.userSignIn);
-  // const { user } = userSignIn;
-
-  // const { loading, data } = useQuery(
-  //   user.isAdmin ? GET_INPROCESS_TICKETS : GET_SELF_TICKETS,
-  //   {
-  //     context: {
-  //       headers: {
-  //         Authorization: `Bearer${" "}${user.token}`,
-  //       },
-  //     },
-  //   }
-  // );
+  const [isMedium, setIsMedium] = useState(false)
+  const [isSmall, setIsIsSmall] = useState(false)
 
   const handleCheckWidthM = () => {
-    let windowWidth = window.innerWidth;
+    let windowWidth = window.innerWidth
 
     if (windowWidth < 1185) {
-      setIsMedium(true);
+      setIsMedium(true)
     } else if (windowWidth > 1185) {
-      setIsMedium(false);
+      setIsMedium(false)
     }
-  };
+  }
 
   const handleCheckWidthS = () => {
-    let windowWidth = window.innerWidth;
+    let windowWidth = window.innerWidth
 
     if (windowWidth < 994) {
-      setIsIsSmall(true);
+      setIsIsSmall(true)
     } else if (windowWidth > 994) {
-      setIsIsSmall(false);
+      setIsIsSmall(false)
     }
-  };
-
-  const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(" ");
-
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1);
-  };
-
-  // useEffect(() => {
-  //   if (!loading && data) {
-  //     if (user.isAdmin) {
-  //       dispatch(getTicket(data.getInProcessTickets));
-  //     } else {
-  //       dispatch(getTicket(data.getSelfTicket));
-  //     }
-  //   }
-  // }, [data]);
+  }
 
   useEffect(() => {
-    handleCheckWidthM();
-    handleCheckWidthS();
-    window.addEventListener("resize", handleCheckWidthM);
-    window.addEventListener("resize", handleCheckWidthS);
-  }, []);
+    handleCheckWidthM()
+    handleCheckWidthS()
+    window.addEventListener('resize', handleCheckWidthM)
+    window.addEventListener('resize', handleCheckWidthS)
+  }, [])
 
   return (
     <Container>
       <InnerContainer>
-        <div className="bottom-container">
+        <div className='bottom-container'>
           {!isMedium && <Sidebar />}
 
           <JobCard
-            location={`${isSmall ? "ticket_detail" : "home"}`}
+            location={`${isSmall ? 'ticket_detail' : 'home'}`}
             isMedium={isMedium}
           />
 
@@ -83,8 +52,8 @@ const Home = () => {
         </div>
       </InnerContainer>
     </Container>
-  );
-};
+  )
+}
 
 const Container = styled.section`
   ${tw`
@@ -97,7 +66,7 @@ const Container = styled.section`
     justify-center
     bg-gray-900
   `}
-`;
+`
 
 const InnerContainer = styled.div`
   ${tw`
@@ -162,6 +131,6 @@ const InnerContainer = styled.div`
       overflow-y-hidden
     `}
   }
-`;
+`
 
-export default Home;
+export default Home
