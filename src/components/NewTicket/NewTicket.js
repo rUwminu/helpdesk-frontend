@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useDropzone } from 'react-dropzone'
 import { gql, useMutation } from '@apollo/client'
 import { useSelector, useDispatch } from 'react-redux'
+import { createNewTicket } from '../../redux/action/ticketAction'
 
 // firebase
 import storage from '../../firebase'
@@ -61,7 +62,7 @@ const NewTicket = ({ state, toggle }) => {
     accept: 'image/*',
   })
 
-  const [createNewTicket] = useMutation(CREATE_NEW_TICKETS, {
+  const [saveNewTicket] = useMutation(CREATE_NEW_TICKETS, {
     context: {
       headers: {
         Authorization: `Bearer${' '}${user.token}`,
@@ -69,7 +70,7 @@ const NewTicket = ({ state, toggle }) => {
     },
     update(_, { data: { createTicket } }) {
       console.log(createTicket)
-      //dispatch(updateTicketIsResolved(createTicket))
+      dispatch(createNewTicket(createTicket))
     },
     onError(err) {
       console.log(err)
@@ -119,7 +120,7 @@ const NewTicket = ({ state, toggle }) => {
 
   const handleCreateTicket = () => {
     if (newTicket.body !== '') {
-      createNewTicket()
+      saveNewTicket()
     }
   }
 
@@ -137,7 +138,7 @@ const NewTicket = ({ state, toggle }) => {
     }, 13000)
   }
 
-  //console.log(files)
+  console.log(newTicket)
 
   return (
     <MainContainer
@@ -171,10 +172,15 @@ const NewTicket = ({ state, toggle }) => {
           <aside>{thumbs}</aside>
         </Container>
         <div className='btn-container'>
-          <div className='checkbox'>
+          <label
+            onChange={() =>
+              setNewTicket({ ...newTicket, isUrgent: !newTicket.isUrgent })
+            }
+            className='checkbox'
+          >
             <input type='checkbox' />
-            <span>Urgent?</span>
-          </div>
+            Urgent?
+          </label>
 
           {files.length > 0 ? (
             <>
@@ -226,10 +232,17 @@ const CREATE_NEW_TICKETS = gql`
     ) {
       id
       typeTicket
+      username
       body
       images
-      isResolved
       isUrgent
+      isResolved
+      comments {
+        id
+        username
+        body
+        createdAt
+      }
       createdAt
     }
   }
@@ -374,17 +387,19 @@ const Card = styled.div`
 
     .checkbox {
       ${tw`
-        ml-2
+        mx-2
         flex
         items-center
         justify-start
+        text-lg
+        text-red-500
+        font-semibold
+        cursor-pointer
       `}
 
-      span {
+      input {
         ${tw`
-          ml-2
-          text-red-500
-          font-semibold
+          mr-2
         `}
       }
     }
