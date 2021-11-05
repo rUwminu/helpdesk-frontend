@@ -22,13 +22,18 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
 // mui icons
-import { ExitToApp, ViewDay } from '@mui/icons-material'
+import {
+  ExitToApp,
+  Ballot,
+  AssignmentTurnedIn,
+  NotificationImportant,
+} from '@mui/icons-material'
 
 function CircularProgressWithLabel(props) {
   return (
-    <Box className='relative w-full h-full'>
+    <Box className='relative w-full h-full max-h-[6rem] max-w-[6rem]'>
       <CircularProgress
-        className='w-full h-full'
+        className='w-full h-full '
         variant='determinate'
         {...props}
       />
@@ -191,10 +196,6 @@ const TicketPanel = () => {
         <div className='title-container'>
           <h1 className='title'>Dashboard</h1>
           <div className='left-tags'>
-            <div className='option-tag all'>
-              <ViewDay className='icon' />
-              <span>View Tickets</span>
-            </div>
             <Link
               to='/helpdesk-frontend/ticket_report'
               className='option-tag report'
@@ -210,6 +211,7 @@ const TicketPanel = () => {
             <CardContainer>
               <h1>Ticket Completion</h1>
               <div className='info-box'>
+                <AssignmentTurnedIn className='icons complete' />
                 <CircularProgressWithLabel
                   className='w-full h-full'
                   value={calAllTicketCompletePercentage()}
@@ -219,6 +221,7 @@ const TicketPanel = () => {
             <CardContainer>
               <h1>Ticket Urgent</h1>
               <div className='info-box'>
+                <NotificationImportant className='icons important' />
                 <CircularProgressWithLabel
                   className='w-full h-full'
                   value={calAllTicketIsUrgentPercentage()}
@@ -226,12 +229,10 @@ const TicketPanel = () => {
               </div>
             </CardContainer>
             <CardContainer>
-              <h1>Ticket Completion</h1>
+              <h1>Total Ticket</h1>
               <div className='info-box'>
-                <CircularProgressWithLabel
-                  className='w-full h-full'
-                  value={calAllTicketCompletePercentage()}
-                />
+                <Ballot className='icons total' />
+                <h2>{allTicketsType.length}</h2>
               </div>
             </CardContainer>
           </div>
@@ -282,7 +283,7 @@ const Container = styled.div`
     flex
     items-center
     justify-center
-    pt-28
+    pt-36
     pb-16
     w-full
     bg-gray-900
@@ -535,14 +536,54 @@ const CardContainer = styled.div`
     ${tw`
         relative
         mx-auto
+        w-full
         flex
         items-center
-        justify-center
-        h-16
-        w-16
-        md:h-20
-        md:w-20
+        justify-around
         mb-2
+    `}
+  }
+
+  .icons {
+    ${tw`
+      w-14
+      h-14
+      p-3
+      rounded-full
+    `}
+  }
+
+  h2 {
+    ${tw`
+      w-[6rem]
+      h-[6rem]
+      flex
+      items-center
+      justify-center
+      text-4xl
+      lg:text-5xl
+      font-semibold
+    `}
+  }
+
+  .complete {
+    ${tw`
+      text-green-500
+      bg-green-50
+    `}
+  }
+
+  .important {
+    ${tw`
+      text-red-500
+      bg-red-100
+    `}
+  }
+
+  .total {
+    ${tw`
+      text-blue-500
+      bg-blue-100
     `}
   }
 `

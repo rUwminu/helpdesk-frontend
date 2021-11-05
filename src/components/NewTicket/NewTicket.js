@@ -138,7 +138,7 @@ const NewTicket = ({ state, toggle }) => {
     }, 13000)
   }
 
-  console.log(newTicket)
+  //console.log(newTicket)
 
   return (
     <MainContainer

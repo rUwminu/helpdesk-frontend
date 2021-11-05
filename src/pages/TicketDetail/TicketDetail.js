@@ -141,11 +141,13 @@ const TicketDetail = () => {
     if (id) {
       const flitedTicket = tickets.find((ticket) => ticket.id === id)
 
-      if (!flitedTicket) {
-        setIsFilter(tickets[0])
-      } else {
+      if (flitedTicket) {
         setIsFilter(flitedTicket)
+      } else {
+        setIsFilter(tickets[0])
       }
+    } else {
+      setIsFilter(tickets[0])
     }
   }
 
@@ -158,11 +160,13 @@ const TicketDetail = () => {
           dispatch(getTicket(data.getSelfTicket))
         }
       }
-    }
-
-    if (tickets && !loading) {
+    } else {
       getJobDetail()
     }
+
+    // if (tickets && !loading) {
+    //   getJobDetail()
+    // }
   }, [id, tickets, data])
 
   useEffect(() => {

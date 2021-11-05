@@ -26,9 +26,11 @@ const JobInfo = () => {
 
       if (flitedTicket) {
         setIsFilter(flitedTicket)
-      } else if (!id) {
+      } else {
         setIsFilter(tickets[0])
       }
+    } else {
+      setIsFilter(tickets[0])
     }
   }
 

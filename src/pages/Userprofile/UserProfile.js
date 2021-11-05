@@ -6,11 +6,15 @@ import { gql, useQuery, useMutation } from '@apollo/client'
 import { useParams, Link, useHistory } from 'react-router-dom'
 import moment from 'moment'
 
+// utils
+import getFirstCharaterOfUsername from '../../utils/getFirstCharOfUsername'
+
 // Redux
 import { getSingleUser, deleteUser } from '../../redux/action/userAction'
 
 //Icon class
 import {
+  AssignmentInd,
   MarkEmailRead,
   AdminPanelSettings,
   ChevronLeft,
@@ -23,6 +27,7 @@ const UserProfile = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
 
+  const [isError, setIsError] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [ticketList, setTicketList] = useState([])
 
@@ -33,6 +38,9 @@ const UserProfile = () => {
   const { userInfo } = userProfile
 
   const { data } = useQuery(GET_USER_INFO, {
+    onError({ graphQLErrors }) {
+      setIsError(graphQLErrors[0].message)
+    },
     variables: { userId: id.toString() },
   })
 
@@ -101,12 +109,7 @@ const UserProfile = () => {
   }, [userTicket])
 
   //console.log(data);
-
-  const getFirstCharaterOfUsername = (username) => {
-    const FC = username.split(' ')
-
-    return FC[0].slice(0, 1) + FC[1].slice(0, 1)
-  }
+  //console.log(error)
 
   const getTitleFromBody = (body) => {
     const title = body.slice(0, 30)
@@ -136,153 +139,166 @@ const UserProfile = () => {
           </Link>
         </div>
 
-        <div className='info'>
-          {userInfo && (
-            <>
-              <LeftContainer>
-                <div className='user-info-card'>
-                  <div className='user-title'>
-                    <div className='logo'>
-                      {getFirstCharaterOfUsername(userInfo.username)}
+        {!isError ? (
+          <div className='info'>
+            {userInfo && (
+              <>
+                <LeftContainer>
+                  <div className='user-info-card'>
+                    <div className='user-title'>
+                      <div className='logo'>
+                        {getFirstCharaterOfUsername(userInfo.username)}
+                      </div>
+                      <div className='user-info'>
+                        <h2>{userInfo.username}</h2>
+                        <small>{userInfo.department}</small>
+                      </div>
                     </div>
-                    <div className='user-info'>
-                      <h2>{userInfo.username}</h2>
-                      <small>{userInfo.department}</small>
+                    <div className='user-detail'>
+                      <h1>User Information</h1>
+                      <div className='list-items'>
+                        <MarkEmailRead className='icon mail' />
+                        <h2>{userInfo.email}</h2>
+                      </div>
+                      <div className='list-items'>
+                        <AdminPanelSettings className='icon admin' />
+                        <h2>
+                          {userInfo.isAdmin
+                            ? 'Admin Permission'
+                            : 'Normal User'}
+                        </h2>
+                      </div>
                     </div>
                   </div>
-                  <div className='user-detail'>
-                    <h1>User Information</h1>
-                    <div className='list-items'>
-                      <MarkEmailRead className='icon mail' />
-                      <h2>{userInfo.email}</h2>
-                    </div>
-                    <div className='list-items'>
-                      <AdminPanelSettings className='icon admin' />
-                      <h2>
-                        {userInfo.isAdmin ? 'Admin Permission' : 'Normal User'}
+                  <div className='recent-ticket-card'>
+                    <h1 className='card-title'>Recent Ticket</h1>
+                    {ticketList.length === 0 && (
+                      <h2 className='ph-title'>
+                        No Ticket Yet. How <span>Amazing</span>!
                       </h2>
-                    </div>
-                  </div>
-                </div>
-                <div className='recent-ticket-card'>
-                  <h1 className='card-title'>Recent Ticket</h1>
-                  {ticketList.length === 0 && (
-                    <h2 className='ph-title'>
-                      No Ticket Yet. How <span>Amazing</span>!
-                    </h2>
-                  )}
-                  <div className='card-container'>
-                    {ticketList &&
-                      ticketList.map((ticket) => {
-                        const { id, body, isResolved, createdAt } = ticket
+                    )}
+                    <div className='card-container'>
+                      {ticketList &&
+                        ticketList.map((ticket) => {
+                          const { id, body, isResolved, createdAt } = ticket
 
-                        return (
-                          <div className='ticket-card' key={id}>
-                            <h1>{getTitleFromBody(body)}...</h1>
-                            <div className='card-detail'>
-                              <div>
-                                <h2>Posted on</h2>
-                                <small>
-                                  {moment(createdAt).format('Do MMM YYYY')}
-                                </small>
+                          return (
+                            <div className='ticket-card' key={id}>
+                              <h1>{getTitleFromBody(body)}...</h1>
+                              <div className='card-detail'>
+                                <div>
+                                  <h2>Posted on</h2>
+                                  <small>
+                                    {moment(createdAt).format('Do MMM YYYY')}
+                                  </small>
+                                </div>
+                                {isResolved ? (
+                                  <div className='status green'>
+                                    <CheckCircle className='icon' />
+                                    Resolved
+                                  </div>
+                                ) : (
+                                  <div className='status red'>
+                                    <CheckCircleOutline className='icon' />
+                                    Not Resolve
+                                  </div>
+                                )}
                               </div>
-                              {isResolved ? (
-                                <div className='status green'>
-                                  <CheckCircle className='icon' />
-                                  Resolved
-                                </div>
-                              ) : (
-                                <div className='status red'>
-                                  <CheckCircleOutline className='icon' />
-                                  Not Resolve
-                                </div>
-                              )}
                             </div>
-                          </div>
-                        )
-                      })}
-                  </div>
-                </div>
-              </LeftContainer>
-
-              <RightContainer>
-                <div className='edit-profile-card'>
-                  <h1>Edit user Profile</h1>
-                  <div className='input-item'>
-                    <h2>Username</h2>
-                    <input
-                      onChange={(e) =>
-                        setInputValue({
-                          ...inputValue,
-                          username: e.target.value,
-                        })
-                      }
-                      placeholder={userInfo.username}
-                      name='username'
-                    />
-                  </div>
-                  <div className='input-item'>
-                    <h2>Email</h2>
-                    <input
-                      onChange={(e) =>
-                        setInputValue({
-                          ...inputValue,
-                          email: e.target.value,
-                        })
-                      }
-                      placeholder={userInfo.email}
-                      name='email'
-                    />
-                  </div>
-                  <div className='input-item'>
-                    <h2>Password</h2>
-                    <input
-                      onChange={(e) =>
-                        setInputValue({
-                          ...inputValue,
-                          password: e.target.value,
-                        })
-                      }
-                      placeholder='Atleast 6 Charater'
-                      name='password'
-                    />
-                  </div>
-                  <div className='input-item'>
-                    <h2>Confirm Password</h2>
-                    <input
-                      onChange={(e) =>
-                        setInputValue({
-                          ...inputValue,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                      placeholder='Retype Your Password'
-                      name='confirmPassword'
-                    />
-                  </div>
-
-                  {Object.keys(inputValue).length > 0 && (
-                    <div onClick={() => handleUpdateProflie()} className='btn'>
-                      Update
-                    </div>
-                  )}
-                </div>
-                <div className='danger-zone-card'>
-                  <h1>Danger Zone</h1>
-                  <div className='list-items'>
-                    <h2>Permanent Remove Account?</h2>
-                    <div
-                      onClick={() => DeleteUserAccount()}
-                      className='del-btn'
-                    >
-                      Remove
+                          )
+                        })}
                     </div>
                   </div>
-                </div>
-              </RightContainer>
-            </>
-          )}
-        </div>
+                </LeftContainer>
+
+                <RightContainer>
+                  <div className='edit-profile-card'>
+                    <h1>Edit user Profile</h1>
+                    <div className='input-item'>
+                      <h2>Username</h2>
+                      <input
+                        onChange={(e) =>
+                          setInputValue({
+                            ...inputValue,
+                            username: e.target.value,
+                          })
+                        }
+                        placeholder={userInfo.username}
+                        name='username'
+                      />
+                    </div>
+                    <div className='input-item'>
+                      <h2>Email</h2>
+                      <input
+                        onChange={(e) =>
+                          setInputValue({
+                            ...inputValue,
+                            email: e.target.value,
+                          })
+                        }
+                        placeholder={userInfo.email}
+                        name='email'
+                      />
+                    </div>
+                    <div className='input-item'>
+                      <h2>Password</h2>
+                      <input
+                        onChange={(e) =>
+                          setInputValue({
+                            ...inputValue,
+                            password: e.target.value,
+                          })
+                        }
+                        placeholder='Atleast 6 Charater'
+                        name='password'
+                      />
+                    </div>
+                    <div className='input-item'>
+                      <h2>Confirm Password</h2>
+                      <input
+                        onChange={(e) =>
+                          setInputValue({
+                            ...inputValue,
+                            confirmPassword: e.target.value,
+                          })
+                        }
+                        placeholder='Retype Your Password'
+                        name='confirmPassword'
+                      />
+                    </div>
+
+                    {Object.keys(inputValue).length > 0 && (
+                      <div
+                        onClick={() => handleUpdateProflie()}
+                        className='btn'
+                      >
+                        Update
+                      </div>
+                    )}
+                  </div>
+                  <div className='danger-zone-card'>
+                    <h1>Danger Zone</h1>
+                    <div className='list-items'>
+                      <h2>Permanent Remove Account?</h2>
+                      <div
+                        onClick={() => DeleteUserAccount()}
+                        className='del-btn'
+                      >
+                        Remove
+                      </div>
+                    </div>
+                  </div>
+                </RightContainer>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className='error-msg'>
+            <AssignmentInd className='icons' />
+            <h1>{isError}</h1>
+            <span className='que-bg'>?</span>
+          </div>
+        )}
       </Container>
     </SectionContainer>
   )
@@ -358,7 +374,7 @@ const Container = styled.div`
     mx-auto
     px-4
     lg:px-0
-    pt-28
+    pt-36
     pb-20
     w-full
     md:max-w-5xl 
@@ -422,6 +438,54 @@ const Container = styled.div`
         font-semibold
         text-gray-200
     `}
+  }
+
+  .error-msg {
+    ${tw`
+      relative
+      w-full
+      py-20
+      flex
+      flex-col
+      items-center
+      justify-center
+      bg-gray-800
+      rounded-md
+    `}
+
+    .icons {
+      ${tw`
+        w-40
+        h-40
+        md:w-48
+        md:h-48
+        text-red-400
+      `}
+    }
+
+    h1 {
+      ${tw`
+        text-xl
+        md:text-2xl
+        text-red-500
+        z-10
+      `}
+    }
+
+    .que-bg {
+      ${tw`
+        absolute
+        top-0
+        md:-top-2
+        right-1/2
+        translate-x-[140%]
+        text-[8rem]
+        md:text-[10rem]
+        text-gray-300
+        rotate-12
+        opacity-75
+      `}
+    }
   }
 
   .info {
