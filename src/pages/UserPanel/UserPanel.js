@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import tw from 'twin.macro'
 import styled from 'styled-components'
-import { DataGrid } from '@material-ui/data-grid'
+import { DataGrid } from '@mui/x-data-grid'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { gql } from '@apollo/client'
