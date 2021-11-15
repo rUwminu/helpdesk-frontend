@@ -1,15 +1,15 @@
-import './App.css'
+import "./App.css";
 
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client'
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
-} from 'react-router-dom'
-import { useSelector } from 'react-redux'
+} from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { Navbar } from './components/index'
+import { Navbar } from "./components/index";
 import {
   Home,
   Login,
@@ -21,20 +21,20 @@ import {
   BlogPage,
   PdfViewer,
   ErrorPage,
-} from './pages/index'
-import AuthRoute from './utils/AuthRoute'
-import PrivateRoute from './utils/PrivateRoute'
+} from "./pages/index";
+import AuthRoute from "./utils/AuthRoute";
+import PrivateRoute from "./utils/PrivateRoute";
 
 function App() {
   const client = new ApolloClient({
     cache: new InMemoryCache(),
-    uri: 'http://localhost:4000/graphql',
-  })
+    uri: "http://localhost:4000/graphql",
+  });
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
-  const baseUrl = '/helpdesk-frontend'
+  const baseUrl = "/helpdesk-frontend";
 
   return (
     <ApolloProvider client={client}>
@@ -71,13 +71,13 @@ function App() {
           <PrivateRoute path={`/helpdesk-frontend/user_panel`}>
             <UserPanel />
           </PrivateRoute>
-          <Route path='*' exact={true}>
+          <Route path="*" exact={true}>
             <ErrorPage />
           </Route>
         </Switch>
       </Router>
     </ApolloProvider>
-  )
+  );
 }
 
-export default App
+export default App;

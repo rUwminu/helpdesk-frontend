@@ -1,126 +1,124 @@
-import React, { useState, useEffect } from 'react'
-import tw from 'twin.macro'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import { gql, useQuery } from '@apollo/client'
-import { useSelector } from 'react-redux'
-import MaterialTable from 'material-table'
-import XLSX from 'xlsx'
-import moment from 'moment'
+import React, { useState, useEffect } from "react";
+import tw from "twin.macro";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
+import { useSelector } from "react-redux";
+//import MaterialTable from "material-table";
+import XLSX from "xlsx";
+import moment from "moment";
+import { DataGrid } from "@mui/x-data-grid";
 
 // Icons
-import { ChevronLeft } from '@mui/icons-material'
+import { ChevronLeft } from "@mui/icons-material";
 
 const TicketReport = () => {
-  const [ticketsList, setTicketsList] = useState([])
+  const [ticketsList, setTicketsList] = useState([]);
 
-  const userSignIn = useSelector((state) => state.userSignIn)
-  const { user } = userSignIn
+  const userSignIn = useSelector((state) => state.userSignIn);
+  const { user } = userSignIn;
 
   const { data } = useQuery(GET_COMPLETE_TICKETS, {
     context: {
       headers: {
-        Authorization: `Bearer${' '}${user.token}`,
+        Authorization: `Bearer${" "}${user.token}`,
       },
     },
-  })
-
-  const getShortBody = (body) => {
-    const title = body.slice(0, 60)
-
-    return title
-  }
+  });
 
   const columns = [
-    { title: 'Name', field: 'username' },
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "username", headerName: "Name", width: 160 },
     {
-      title: 'Position',
-      field: 'typeTicket',
+      field: "typeTicket",
+      headerName: "Position",
+      width: 100,
     },
     {
-      title: 'Description',
-      field: 'body',
-      render: (params) => {
-        return <div>{getShortBody(params.body)}</div>
+      field: "body",
+      headerName: "Description",
+      renderCell: (params) => {
+        const title = params.row.body.slice(0, 60);
+        return <div>{title}</div>;
       },
+      width: 220,
     },
     {
-      title: 'Resolved',
-      field: 'isResolved',
-      render: (params) => {
-        return <div>{params.isResolved && 'Completed Ticket'}</div>
+      field: "isResolved",
+      headerName: "Resolved",
+      renderCell: (params) => {
+        return <div>{params.row.isResolved && "Ticket Complete"}</div>;
       },
+      width: 130,
     },
     {
-      title: 'Date',
-      field: 'updatedAt',
-      render: (params) => {
-        const date = params.updatedAt
+      field: "updatedAt",
+      headerName: "Date",
+      renderCell: (params) => {
+        const date = params.row.updatedAt;
 
-        return <div>{moment(date).format('Do MMM YYYY')}</div>
+        return <div>{moment(date).format("Do MMM YYYY")}</div>;
       },
     },
-  ]
+  ];
 
   const exportToExcelFile = () => {
     const newdata = ticketsList.map((row) => {
-      delete row.__typename
-      delete row.id
-      delete row.tableData
+      delete row.__typename;
+      delete row.id;
+      delete row.tableData;
 
-      return row
-    })
-    const workSheet = XLSX.utils.json_to_sheet(newdata)
-    const workBook = XLSX.utils.book_new()
+      return row;
+    });
+    const workSheet = XLSX.utils.json_to_sheet(newdata);
+    const workBook = XLSX.utils.book_new();
 
-    XLSX.utils.book_append_sheet(workBook, workSheet, 'Ticket Report')
+    XLSX.utils.book_append_sheet(workBook, workSheet, "Ticket Report");
 
     //Buffer
-    let buf = XLSX.write(workBook, { bookType: 'xlsx', type: 'buffer' })
+    let buf = XLSX.write(workBook, { bookType: "xlsx", type: "buffer" });
     //Binary string
-    XLSX.write(workBook, { bookType: 'xlsx', type: 'binary' })
+    XLSX.write(workBook, { bookType: "xlsx", type: "binary" });
     //Download
-    XLSX.writeFile(workBook, 'TicektReport.xlsx')
-  }
+    XLSX.writeFile(workBook, "TicektReport.xlsx");
+  };
 
   useEffect(() => {
     if (data) {
-      setTicketsList(data.getCompletedTickets.map((o) => ({ ...o })))
+      setTicketsList(data.getCompletedTickets.map((o) => ({ ...o })));
     }
-  }, [data])
+  }, [data]);
 
+  //console.log(ticketsList);
 
   return (
     <Container>
-      <div className='inner-container'>
-        <Link to='/helpdesk-frontend/ticket_panel' className='back-btn'>
-          <ChevronLeft className='back-icon' />
-          Go Back
-        </Link>
-        {ticketsList.length > 0 && (
-          <MaterialTable
-            title='Completed Tickets'
+      <div className="inner-container">
+        <div className="link-box">
+          <Link to="/helpdesk-frontend/ticket_panel" className="back-btn">
+            <ChevronLeft className="back-icon" />
+            Go Back
+          </Link>
+          <div className="exp-btn" onClick={() => exportToExcelFile()}>
+            Export Report
+          </div>
+        </div>
+
+        {ticketsList && (
+          <DataGrid
+            rows={ticketsList && ticketsList}
             columns={columns}
-            data={ticketsList}
-            actions={[
-              {
-                icon: () => <button>Export</button>,
-                tooltip: 'Export to Excel',
-                onClick: () => {
-                  exportToExcelFile()
-                },
-                isFreeAction: true,
-              },
-            ]}
-            options={{
-              tableLayout: 'Auto',
-            }}
+            disableSelectionOnClick
+            pageSize={8}
+            checkboxSelection
+            getRowId={(r) => r.id}
+            className="grid-style"
           />
         )}
       </div>
     </Container>
-  )
-}
+  );
+};
 
 const GET_COMPLETE_TICKETS = gql`
   {
@@ -133,7 +131,7 @@ const GET_COMPLETE_TICKETS = gql`
       updatedAt
     }
   }
-`
+`;
 
 const Container = styled.div`
   ${tw`
@@ -153,6 +151,39 @@ const Container = styled.div`
         max-w-6xl
     `}
 
+    .link-box {
+      ${tw`
+        mb-4
+        w-full
+        flex
+        items-center
+        justify-between
+      `}
+
+      .exp-btn {
+        ${tw`
+          py-1
+          w-36
+          text-lg
+          text-center
+          text-gray-50
+          bg-gray-600
+          rounded-md
+          cursor-pointer
+
+          transition
+          duration-200
+          ease-in-out
+        `}
+
+        :hover {
+          ${tw`
+            bg-gray-700
+          `}
+        }
+      }
+    }
+
     .back-btn {
       ${tw`
         flex
@@ -160,7 +191,6 @@ const Container = styled.div`
         justify-center
         py-1
         pr-3
-        mb-4
         w-36
         md:text-lg
         text-gray-200
@@ -236,7 +266,15 @@ const Container = styled.div`
       `}
       }
     }
-  }
-`
 
-export default TicketReport
+    .grid-style {
+      ${tw`
+      min-h-[24rem] 
+      w-full
+      bg-gray-50
+    `}
+    }
+  }
+`;
+
+export default TicketReport;
